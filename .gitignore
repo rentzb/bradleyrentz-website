@@ -2,6 +2,16 @@
 .Rhistory
 .RData
 .Ruserdata
+
+
+# Quarto stuff
+/.quarto/
+_site/
+**/*_cache/*
+
+# Miscellaneous stuff
+design-assets/*
+static/etc/*
 .DS_Store
 
-/.quarto/
+/.luarc.json
