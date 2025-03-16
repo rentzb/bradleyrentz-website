@@ -1,0 +1,49 @@
+---
+title: "About me"
+pagetitle: "Bradley Rentz"
+description-meta: "Bradley Rentz is an applied quantitative researcher with a background in education research, linguistics, and data science."
+main-photo: /files/profiles/rentz-photo.jpg
+main-photo-square: /files/profiles/rentz-photo-square.jpg
+title-block-banner: "#BF1054"
+format:
+  html:
+    quarto-template-params:
+      banner-header-class: "home"
+---
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-sm-4}
+
+```{=html}
+<div class="grid" style="--bs-columns: 5; row-gap: 0;">
+  <div class="g-col-1 g-col-sm-0"></div>
+  <div class="g-col-3 g-col-sm-5">
+    <picture>
+      <source media="(max-width: 576px)" srcset="{{< meta main-photo-square >}}">
+      <source media="(min-width: 576px)" srcset="{{< meta main-photo >}}">
+      <img class="img-fluid" src="{{< meta main-photo >}}" alt="{{< meta author-meta >}}">
+    </picture>
+  </div>
+  <div class="g-col-1 g-col-sm-0"></div>
+</div>
+```
+
+:::
+
+::: {.g-col-12 .g-col-sm-8}
+
+I am an applied quantitative researcher specializing in education research, sociolinguistics, and data science. I worked at [McREL International](https://mcrel.org) from 2018–2025 and was the Applied Research Lead for the Institute of Education Sciences' [Regional Educational Laboratory (REL) Pacific](https://ies.ed.gov/use-work/regional-educational-laboratories-rel/pacific). 
+
+I have a PhD in linguistics from the [University of Hawaiʻi at Mānoa](https://manoa.hawaii.edu/linguistics/).
+
+My research has focused on variety of topics including teacher preparation in [Palau](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/teacher-certification-retention-and-recruitment-palau-understanding-graduation-patterns-teacher) and [Guåhan](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/using-high-school-and-college-data-predict-teacher-candidates-performance-praxis-unibetsedat-guahan); college readiness of high school students in [Pohnpei, Federated States of Micronesia](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/using-high-school-data-explore-early-college-success-pohnpei-federated-states-micronesia), [Guåhan](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/using-high-school-data-predict-college-readiness-and-early-college-success-guahan-guam), the [Republic of the Marshall Islands](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/demographic-and-academic-characteristics-associated-college-readiness-and-early-college-success), and [Palau](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/using-high-school-data-predict-college-success-palau); social-emotional learning of high school student in [CNMI](https://ies.ed.gov/use-work/resource-library/report/descriptive-study/associations-between-high-school-students-social-emotional-competencies-and-their-high-school-and); language attitudes on [Pohnpei](https://scholarspace.manoa.hawaii.edu/items/b7e90920-fe07-4fdd-a9d3-0058b3843cf8); and [topological relations in Pohnpeian](http://hdl.handle.net/10125/63283). 
+
+Outside of my research, I have led several technical assistance projects on education language policy, Indigenous language instruction, Indigenous culture education, instructional models, systemic change, teacher and principal professional learning, and data-informed decision-making.
+
+
+
+
+:::
+
+:::

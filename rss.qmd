@@ -1,0 +1,15 @@
+---
+title: "Bradley Rentz's blog"
+search: false
+listing:
+  sort: "date desc"
+  feed: 
+    title: "Bradley Rentz's blog"
+    description: "Bradley Rentz's blog"
+    items: 60
+    type: partial
+    language: en
+  contents:
+    - "blog/**/index.qmd"
+    - "!blog/index.qmd"
+---
