@@ -59,6 +59,9 @@ website:
       - text: "{{< iconify bi linkedin size=1.1em title='LinkedIn' >}}"
         href: https://www.linkedin.com/in/bradleyrentz
         rel: me
+      - text: "{{< iconify academicons inaturalist size=1.1em title='iNaturalist' >}}"
+        href: https://www.inaturalist.org/people/bradleyrentz
+        rel: me
   
   page-footer:
     left: |
