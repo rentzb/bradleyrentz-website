@@ -25,7 +25,7 @@ project:
 freeze: true
 
 bibliography: files/bib/references.bib
-csl: files/bib/chicago-author-date.csl
+csl: files/bib/apa.csl
 
 # Metadata stuff
 pagetitle: "{{< meta title >}} | Bradley Rentz"
