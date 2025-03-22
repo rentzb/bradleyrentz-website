@@ -1,8 +1,8 @@
 {
-  "hash": "10af90374ab1e1a0a5a33babe1f51b7b",
+  "hash": "ce7b6be04789212f2fe5ed8b8202529f",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"Introducing My New Blog\"\ndate: 2025-03-20\ndescription: \"A beginning of a new era.\"\n\n\n\ncategories:\n  - Introduction\n\n\nformat:\n  html:\n    shift-heading-level-by: 1\n    toc-depth: 4\n    highlight-style: arrow\n\ncitation: true\n---\n\n\n\n\n\n\nWelcome to my new blog! Now that I am about to be unemployed, thanks to DOGE cutting all of my research funding, I decided to return to making periodic blog posts. My posts will mostly focus on R coding, statistics, and whatever research projects I'm currently working on. The posts will be written in a mostly tutorial-like fashion, so that you can follow along with the code and data that I'm using. \n\n\n",
+    "markdown": "---\ntitle: \"Introducing My New Blog\"\ndate: 2025-03-20\ndescription: \"A beginning of a new era.\"\n\n\n\ncategories:\n  - Introduction\n\n\nformat:\n  html:\n    shift-heading-level-by: 1\n    toc-depth: 4\n    highlight-style: arrow\n\ncitation: true\n---\n\n\n\n\n\n\nWelcome to my new blog! Now that I am about to be unemployed, thanks to DOGE cutting all of my research funding, I decided to return to making periodic blog posts. My posts will mostly focus on R coding, statistics, and whatever research projects I'm currently working on. The posts will be written in a mostly tutorial-like fashion, so that you can follow along with the code and data that I'm using. My [old blog](https://rentzb.github.io/) from my grad school days is live for now as well. \n\nHope you enjoy reading it and please feel free to reach out with suggestions and helpful feedback!\n\n\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"

@@ -43,6 +43,8 @@ options(
 ```
 
 
-Welcome to my new blog! Now that I am about to be unemployed, thanks to DOGE cutting all of my research funding, I decided to return to making periodic blog posts. My posts will mostly focus on R coding, statistics, and whatever research projects I'm currently working on. The posts will be written in a mostly tutorial-like fashion, so that you can follow along with the code and data that I'm using. 
+Welcome to my new blog! Now that I am about to be unemployed, thanks to DOGE cutting all of my research funding, I decided to return to making periodic blog posts. My posts will mostly focus on R coding, statistics, and whatever research projects I'm currently working on. The posts will be written in a mostly tutorial-like fashion, so that you can follow along with the code and data that I'm using. My [old blog](https://rentzb.github.io/) from my grad school days is live for now as well. 
+
+Hope you enjoy reading it and please feel free to reach out with suggestions and helpful feedback!
 
 
