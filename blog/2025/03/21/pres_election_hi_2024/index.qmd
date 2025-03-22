@@ -434,9 +434,9 @@ acs_data_2022_prepped_geo$match_id_2024 <- matches_2024
 precincts_results_2024$match_id_2024 <- 1:nrow(precincts_results_2024)
 ```
 
-## Aggregating ACS Block Group Results to Election Precincts.
+## Aggregating ACS Block Group Results to Election Precincts
 
-After matching the precincts to the census block groups, the values from the smaller sized block groups need to be aggregated up to the larger election precincts using the `estimate_up()` function. This only directly works with counts. For continuous values, we will calculate the median for all the block groups within each precinct. There may be a better way to do that, but we'll use that for now. One additional limitation of aggregating the census results, is that we lose the ability to use the ACS's reported measurement error values in the model, which means our model may be more confident in the ACS values that it otherwise should be. There may be ways to aggregate the measures errors (such as [this guide](https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch08.pdf) from the U.S. Census Bureau), but I need to dig further into it later to figure it out and may make a new blog post about it.
+After matching the precincts to the census block groups, the values from the smaller sized block groups need to be aggregated up to the larger election precincts using the `estimate_up()` function. This only directly works with counts. For continuous values, we will calculate the median for all the block groups within each precinct. There may be a better way to do that, but we'll use that for now. One additional limitation of aggregating the census results is that we lose the ability to use the ACS's reported measurement error values in the model, which means our model may be more confident in the ACS values than it otherwise should be. There may be ways to aggregate the measurement errors (such as [this guide](https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch08.pdf) from the U.S. Census Bureau), but I need to dig further into it later to figure it out and may make a new blog post about it.
 
 ```{r}
 #| label: census-estimateup
@@ -474,7 +474,7 @@ model2_data <- precincts_results_2024_acs %>%
 
 ```
 
-It looks like the continuous ACS variables have a fair amount of missingness (ignore the  variable). We will need to remove or impute those data in our final model later.
+It looks like the continuous ACS variables have a fair amount of missingness. We will need to impute those data in our final model later.
 
 ```{r}
 #| label: missing-census-data
@@ -489,7 +489,7 @@ gg_miss_var(model2_data) + theme_clean()
 
 ## Building Our Second Model
 
-For our second model, we include all the ACS variables, but for the ones with missing values, we will impute the missing values with the `mi()` in the model itself. To be safe, we will use the `skew_normal()` distribution for the imputation formulae, since the underlying distribution may be somewhat skewed. We also standardized all the predictors in the model to make it easier to compare the results between predictors and easier to set priors for them.
+For our second model, we include all the ACS variables, but for the ones with missing values, we will impute the missing values with the `mi()` function in the model itself. To be safe, we will use the `skew_normal()` distribution for the imputation formulae's families, since the underlying distribution may be somewhat skewed. We also standardized all the predictors in the model to make it easier to compare the results between predictors and easier to set priors for them.
 
 ```{r}
 #| label: model2
