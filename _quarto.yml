@@ -23,8 +23,6 @@ project:
     - "y_key_31e0c4105fc75710.html"
 
 freeze: true
-environment:
-  QUARTO_DENO_EXTRA_OPTIONS: "--v8-flags=--stack-size=9999,--heap-size=9999,--max-old-space-size=9999,--max-string-length=6073741824"
 
 execute:
   memory: 20G
