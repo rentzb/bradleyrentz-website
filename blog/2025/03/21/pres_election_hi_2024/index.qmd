@@ -1,0 +1,757 @@
+---
+title: "Analyzing the Results of the 2024 Presidential Election in Hawaiʻi Using Bayesian Conditional Autoregressive (CAR) Models"
+date: 2025-03-21
+description: "Download election and census data, link data sets, model data, visualize results with interactive maps"
+
+image: img/model2-preds-2.png
+twitter-card: 
+    image: "img/model2-preds-2.png"
+open-graph: 
+    image: "img/model2-preds-2.png"
+
+categories:
+  - R
+  - gis
+  - maps
+  - brms
+  - presidential election
+  - Hawaii
+  - Bayesian
+  - Spatial Model
+  - Conditional autoregressive models
+  - census
+
+format:
+  html:
+    shift-heading-level-by: 1
+    toc-depth: 4
+    highlight-style: arrow
+
+citation: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 6 * 0.618,
+  fig.retina = 3,
+  dev = "ragg_png",
+  fig.align = "center",
+  collapse = TRUE,
+  out.width = "95%",
+  warning = FALSE,
+  cache.extra = 1234  # Change number to invalidate cache
+)
+
+options(
+  digits = 4,
+  width = 300
+)
+```
+
+
+Now that the 2024 U.S. presidential election was a few months ago and we are feeling the brunt of the new administration's actions, it time to revisit those results to see what new information we can learn. 
+
+Hawaiʻi is a solidly blue state, but as some local news sources have reported (see for example this [Civil Beat](https://www.civilbeat.org/2024/11/trumps-support-in-hawaii-has-grown-since-he-first-appeared-on-ballots-in-2016/) article), the vote share for Trump has risen substantially over time. In this post, I attempt to apply Bayesian Conditional Autoregressive (CAR) Models to try to model the extent of support for Trump across the state among the electorate. 
+
+# Why use Bayesian CAR models?
+
+Elections are in part spatial phenomena. We know that for a variety of social and historical reasons, the geographic community one lives in the U.S. tends to be correlated with one's race/ethnicity, socio-economic status, education level, occupation, income, access to government services, health care, and high-quality food, quality of live, and many other factors. Because of that, one's geographic community is also correlated with one's political views. We also know that while each community may tend to have specific political views, those political views are also influenced their neighboring communities and are in turn influenced by their neighbors as well.
+
+Elections then are a measure of a given community's underlying political views at a specific time. Since we want to know what the underlying views are, we need to create a model that takes into account the spatial (aka community-level) correlation of political views, as well as how nearby communities may influence those views as well. 
+
+To take into account the spatial correlations, we'll use a version of CAR models called the [Besag-York-Mollié](https://doi.org/10.1007/BF00116466) model that is frequently used to model incidence rates for diseases. This model includes two set of spatial  correlations. First it models the correlation of a geographic area with all of the areas that border it. Then it models a random effect for each geographic unit so that it captures the unique variation within each unit.  
+
+But before we get too deep into the model, we need to gather the data first.
+
+To get started we will be using these packages.
+
+```{r}
+#| label: libraries
+#| include: true
+#| message: false
+library(tidyverse)       # ggplot, dplyr, %>%, and friends
+library(janitor)         # data cleaning tools
+library(brms)            # Bayesian models
+library(sf)              # For importing GIS shapefiles and plotting maps
+library(plotly)          # Interactive plots
+library(tidycensus)      # Downloading Census Data
+library(naniar)          # Visualize missing data
+library(geomander)       # Matching geographic areas of different sizes
+library(spdep)           # Identifying neighbors for the CAR models
+library(tidybayes)       # For Bayesian helper functions
+
+
+# Custom ggplot theme to make pretty plots
+# Get the News Cycle font at https://fonts.google.com/specimen/News+Cycle
+theme_clean <- function() {
+  theme_minimal(base_family = "News Cycle") +
+    theme(panel.grid.minor = element_blank(),
+          plot.title = element_text(face = "bold"),
+          axis.title = element_text(face = "bold"),
+          strip.text = element_text(face = "bold", size = rel(1), hjust = 0),
+          strip.background = element_rect(fill = "grey80", color = NA),
+          legend.title = element_text(face = "bold"))
+}
+
+```
+# Prepping HI Election Data
+
+The official precinct-level election results are available from the [Hawaiʻi Office of Elections](https://elections.hawaii.gov/wp-content/results/media.txt). The election results contain results for all elections that happened in the state, so we want to import the data and limit the them to only the presidential results. 
+
+```{r}
+#| label: import-election-data
+#| include: true
+#| message: false
+# import the data directly from the elections site
+# need to change the encoding otherwise there will be an error
+election_results <- read_csv("https://elections.hawaii.gov/wp-content/results/media.txt",
+                 locale=locale(encoding = "UTF-16LE"), 
+                 skip = 1) %>%
+  # change columns to easier to use names
+  clean_names() %>%
+  # remove the final comma in the last column
+  mutate(in_person_votes = as.numeric(str_replace(in_person_votes,",",""))) %>%
+  # keep only the presidential results
+  filter(str_detect(contest_title,"President")==T)
+
+head(election_results)
+```
+
+Now that the data are imported, we need to remove unnecessary columns and convert one row for each candidate per precinct into one row per precinct with the results for each party.
+
+```{r}
+#| label: clean-election-data
+#| include: true
+#| message: false
+
+election_results_2024 <- election_results %>%
+  rename(precinct_name = number_precinct_name) %>%
+  group_by(precinct_name,contest_id,contest_title,choice_id,candidate_name) %>%
+  summarise(total_reg_voters = sum(reg_voters),
+            total_ballots = sum(ballots),
+            total_votes = sum(mail_votes) + sum(in_person_votes)) %>%
+  ungroup() %>%
+  mutate(party = str_extract(candidate_name,"\\((\\w+)\\)",group=1)) %>%
+  select(precinct_name,contest_title,total_reg_voters:party) %>%
+  pivot_wider(names_from = party, 
+              values_from = total_votes, 
+              values_fill = 0) %>%
+  mutate(total_votes = D + R + L + G + S + SL) %>%
+  select(precinct_name,R,total_votes) %>%
+  # remove precincts with 0 votes
+  filter(total_votes > 0 ) %>%
+  rename(total_votes_2024 = total_votes,
+         R_2024 = R)
+
+head(election_results_2024)
+```
+
+Let's quickly look at the results for Trump as a percentage of the total votes.
+
+```{r}
+#| label: descriptplot-election-data
+#| include: true
+#| message: false
+
+election_results_2024 %>%
+  mutate(perc_trump = R_2024 / total_votes_2024) %>%
+  ggplot(aes(x=reorder(precinct_name,-perc_trump),
+             y = perc_trump)) +
+  geom_bar(stat="identity") +
+  theme_clean() +
+  theme(axis.text.x = element_blank(),
+        panel.grid = element_blank()) +
+  geom_hline(yintercept = 0.5,
+             linetype = 'dotted',
+             color = "#009E73") +
+  ylab("Percent Voted for Trump") +
+  scale_y_continuous(labels = scales::percent) +
+  xlab("Precinct") 
+  
+
+```
+
+We see that Trump only had 50% or more of the vote in only `r election_results_2024 %>% mutate(perc_trump = R_2024 / total_votes_2024) %>% filter(perc_trump >= 0.5) %>% nrow()` out of `r nrow(election_results_2024)` precincts, but had at least 25% of the vote in almost all. 
+
+To dig into this more, we need to download the election precinct shape files from the [Hawaiʻi Statewide GIS Program](https://geoportal.hawaii.gov/datasets/HiStateGIS::election-precincts/about) and then link the precinct names to the shape file. Now we can create a map to show how each precinct voted. 
+
+```{r}
+#| label: import-election-shapefile
+#| include: true
+#| message: false
+precincts_shape_2024 <- st_read("data/Election_Precincts.shp")
+
+# join the election results to the shape file
+precincts_results_2024 <- precincts_shape_2024 %>%
+  left_join(election_results_2024, by = c("dp"="precinct_name"))%>%
+  filter(total_votes_2024 > 0)
+
+election_plot1 <- precincts_results_2024 %>%
+  mutate(`Percent Trump` = R_2024 / total_votes_2024) %>%
+  ggplot() +
+  geom_sf(aes(fill = `Percent Trump`)) +
+  theme_void() +
+  scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                       low = "#313695",
+                       high = "#a50026",
+                       midpoint=0.5,
+                       mid = "#ffffbf")
+ggplotly(election_plot1)
+
+
+
+```
+
+# Our First CAR Model
+
+Let's create our first BYM model to better understand the actual expected level of support for Trump in each election precinct. 
+
+First we need to create a list of neighboring election precincts using the `poly2nb()` function of the `spdep` package and the create a weights matrix from the neighbors list with the `nb2mat()` function. We will also need to unfortunately remove any precincts that do not have any neighbors.
+
+```{r}
+#| label: neighbors
+#| include: true
+#| message: false
+
+# remove precincts with no neighbors
+precincts_results_2024_final <- precincts_results_2024 %>%
+  filter(grepl("67|73|94",objectid) == FALSE)
+W.nb <- poly2nb(precincts_results_2024_final, row.names = precincts_results_2024_final$objectid)
+W <- nb2mat(W.nb, style="B")
+```
+
+Now we create our first model. This model will only include an intercept and spatial correlations. We will use a negative binomial model since we are modelling count data that may be overdispersed. For the outcome, we will used the number of votes Trump received in each precinct, and we will include a `rate()` argument to indicate the total number of votes cast in that precinct, since each precinct can vary in population. We also need to use the `data2` argument to tell brms where to find the neighborhood weight matrix. I am using more iterations than usual for the model, since the CAR models otherwise tend to have too high r-hat values which represent poor mixing of the model's chains.
+
+```{r}
+#| label: model1
+#| include: true
+#| message: false
+#| cache: true
+trump_model <- brm(bf(R_2024 | rate(total_votes_2024) ~ 1 +
+                             car(W, type = "bym2",gr=objectid)), # spatial correlation
+                   data = precincts_results_2024_final,
+                   data2 = list(W=W), # the neighborhood weight matrix
+                   cores=6,
+                   init = 0,
+                   iter = 8000, # need lots of iterations for good convergence
+                   control = list(adapt_delta = 0.9999999999,
+                                  max_treedepth=14),
+                   save_pars = save_pars(all = TRUE),
+                   family=negbinomial())
+
+```
+
+At first glance the model seems to have run fine with good r-hat values and the posterior predictive check plots shows that we are sampling the outcome fairly well. 
+
+```{r}
+#| label: model1-summary
+#| include: true
+#| message: false
+summary(trump_model)
+pp_check(trump_model)
+```
+
+Let's update our map to see what the expected support for Trump is. First, we need to generated the predicted values for each precinct using `predicted_draws()` then calculate the median predicted value with `median_hdi()`. Finally we calculate the expected percentage of votes by using the observed total number of votes and compare that percentaged to the observed percentage of votes for Trump.
+
+```{r}
+#| label: model1-preds
+#| include: true
+#| message: false
+#| cache: true
+
+trump_model_preds <- trump_model %>%
+  predicted_draws(newdata = precincts_results_2024_final,
+                  ndraws = 1500) %>%
+  data.frame() %>%  # change to df to drop spatial element so can use median_hdi()
+  group_by(dp) %>%
+  median_hdi(.prediction)
+
+predicted_percentages_model1 <- precincts_results_2024 %>%
+  left_join(trump_model_preds) %>%
+  mutate(`Expected Percentage for Trump` = `.prediction` / total_votes_2024,
+         `Original Percentage for Trump` = R_2024 / total_votes_2024,
+         `Change in Percentage for Trump` = `Expected Percentage for Trump` -`Original Percentage for Trump`)
+
+election_plot2 <- predicted_percentages_model1 %>%
+  ggplot() +
+  geom_sf(aes(fill = `Expected Percentage for Trump`)) +
+  theme_void() +
+  scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                       low = "#313695",
+                       high = "#a50026",
+                       midpoint=0.5,
+                       mid = "#ffffbf")
+ggplotly(election_plot2)
+
+election_plot3 <- predicted_percentages_model1 %>%
+  ggplot() +
+  geom_sf(aes(fill = `Change in Percentage for Trump`)) +
+  theme_void() +
+  scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                       low = "#313695",
+                       high = "#a50026",
+                       midpoint=0,
+                       mid = "#ffffbf")
+ggplotly(election_plot3)
+
+predicted_percentages_model1 %>%
+  ggplot(aes(x=reorder(dp,-`Change in Percentage for Trump`),
+             y = `Change in Percentage for Trump`)) +
+  geom_bar(stat="identity") +
+  theme_clean() +
+  theme(axis.text.x = element_blank(),
+        panel.grid = element_blank()) +
+  ylab("Change in Percentage of Vote for Trump") +
+  scale_y_continuous(labels = scales::percent) +
+  xlab("Precinct") 
+
+```
+
+The results show that the vast majority of the precincts have little change from the observed percentage. However, precincts that were strongly in favor of Trump were decreased somewhat, especially those surrounded by precincts with lower support. Similarly, precincts with the lowest number of votes for Trump were increased somewhat. This pattern clearly demonstrated the effects of partial pooling from the random effects of the model, where values are pulled toward the mean, as well as the spatial correlation where values are influenced by their neighbors.
+
+We can also calculate the overall support for Trump across the state by aggregating across the predicted results. 
+
+```{r}
+#| label: model1-preds2
+#| include: true
+#| message: false
+#| cache: true
+
+trump_model_votes_overall <- trump_model %>%
+  predicted_draws(newdata = precincts_results_2024_final,
+                  ndraws = 1500) %>%
+  data.frame() %>%  # change to df to drop spatial element so can use median_hdi()
+  group_by(`.draw`) %>%
+  summarize(total_votes_trump_predicted = sum(`.prediction`),
+            total_votes_overall = sum(total_votes_2024)) %>%
+  mutate(estimated_percent_trump = total_votes_trump_predicted / total_votes_overall) %>%
+  ungroup()
+
+trump_model_votes_overall %>%
+  ggplot(aes(x = estimated_percent_trump)) +
+  stat_halfeye() + 
+  scale_x_continuous(labels = scales::percent) +
+  theme_clean() + 
+  ylab("") +
+  xlab("Estimated Statewide Vote Percentage for Trump")
+```
+
+The model predicts that `r scales::percent(median(trump_model_votes_overall$estimated_percent_trump),accuracy=0.01)` of voters statewide supported Trump which is nearly identical to the observed percentage of `r precincts_results_2024_final %>% data.frame() %>% summarize(totalR = sum(R_2024), totalvotes = sum(total_votes_2024)) %>% mutate(percT = scales::percent(totalR / totalvotes,accuracy=0.01)) %>% dplyr::select(percT) %>% unlist %>% unname` (excluding the three precincts that were removed for not having any neighbors). While our model has the same statewide estimate, it does provide us with two sets of important insights. First, we now have a credible interval for the electoral support for Trump (37.0—37.8%), so that we can specify how certain we are about the level of support for Trump. Second, we potentially more accurate precinct-level information about the support for Trump. 
+
+Now let's move on to see if we can improve our model but adding additional covariates.
+
+# Our Second CAR Model
+Our first model only included the spatial correlations and precinct-level effect on the vote. As expected, these did not deviate much from the observed vote results. Now, we want to explore what happens to our model if we add other information about each community, such as education-level, income, age distributions, and other factors that may be correlated with how each community voted.
+
+This task is more challenging since we currently do not have those data available directly for each precinct. To do this, we need to the following steps:
+
+- Download data from the U.S. Census Bureau's  American Community Survey (ACS) for the smallest available geographic unit.
+- Match the ACS geographic units to the election precincts.
+- Aggregate the ACS data for the election precincts.
+
+
+## Linking the Election Data to Census Data
+
+Since we want to model each communities' support for Trump, we need to add other information about each community to our model. To do this, we can download block group-level data from the U.S. Census Bureau (assuming those data sets haven't been removed by the Trump administration by the time you are reading this) and will include a variety of variables from the 2022 American Community Survey that could be associated with how one voted.
+
+```{r}
+#| label: download-census-data
+#| include: true
+#| message: false
+#| cache: true
+acs_data_2022 <- get_acs(geography = "cbg",
+                         state="HI",
+                         year = 2022,
+                         variables = c(total_pop = "B01003_001",
+                                       median_age_m = "B01002_002",
+                                       median_age_w = "B01002_003",
+                                       white_pop = "B02001_002",
+                                       asian_pop = "B02001_005",
+                                       hi_pi_combo = "B02012_001",
+                                       latino = "B03003_001",
+                                       no_school = "B15003_002",
+                                       hs_diploma = "B15003_017",
+                                       ged = "B15003_018",
+                                       bachelors = "B15003_022",
+                                       masters = "B15003_023",
+                                       prof_degree = "B15003_024",
+                                       doctorate = "B15003_025",
+                                       median_household_income = "B19013_001",
+                                       median_rent_gross_income = "B25071_001",
+                                       veterans = "B99211_002",
+                                       total_occupied = "B25003_001",
+                                       total_rented = "B25003_003",
+                                       total_households_lang = "C16002_001",
+                                       total_asian_pi_lang_lep = "C16002_010",
+                                       median_age_men = "B01002_002",
+                                       median_age_women = "B01002_003"
+                         )) %>%
+  pivot_wider(names_from = variable, values_from = c(estimate, moe))
+
+head(acs_data_2022)
+```
+
+
+
+## Match the ACS Block Groups to Election Precincts
+
+Next, we import the census block group shape files which can also be downloaded from the Hawaiʻi GIS project linked above. However, the problem we face next is that the election precincts and the census block groups comprise different areas. Luckily, we can use the `geo_match()` function from the `geomander` package to match the voting precincts to the block groups.
+
+
+```{r}
+#| label: import-census-shapes
+#| include: true
+#| message: false
+#| cache: true
+# import census block group shape file
+hi_bg_shape_2020 <- st_read("data/hi_bg_2020_bound.shp")
+
+# create some additional variables for the ACS data
+acs_data_2022_prepped <- acs_data_2022 %>%
+  rename_with( ~gsub("estimate_","", .x)) %>%
+  mutate(hs_ged = ged + hs_diploma,
+         percent_asian_pi_lang_lep = total_asian_pi_lang_lep/total_households_lang) %>%
+  select(-latino,
+         -ged,
+         -hs_diploma, -total_asian_pi_lang_lep,
+         -total_households_lang) %>%
+  filter(total_pop > 0)
+
+# link to census block shape
+acs_data_2022_prepped_geo <- hi_bg_shape_2020 %>%
+  inner_join(acs_data_2022_prepped, by = c("GEOID20"="GEOID"))
+
+# match precincts to block groups
+matches_2024 <- geo_match(from = acs_data_2022_prepped_geo, 
+                          to = precincts_results_2024, 
+                          method = 'centroid')
+
+acs_data_2022_prepped_geo$match_id_2024 <- matches_2024
+precincts_results_2024$match_id_2024 <- 1:nrow(precincts_results_2024)
+```
+
+## Aggregating ACS Block Group Results to Election Precincts.
+
+After matching the precincts to the census block groups, the values from the smaller sized block groups need to be aggregated up to the larger election precincts using the `estimate_up()` function. This only directly works with counts. For continuous values, we will calculate the median for all the block groups within each precinct. There may be a better way to do that, but we'll use that for now. One additional limitation of aggregating the census results, is that we lose the ability use the ACS's reported measurement error values in the model, which means our model may be more confident in the ACS values that it otherwise should be. There may be ways to aggregate the measures errors (such as [this guide](https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch08.pdf) from the U.S. Census Bureau, but I need to dig further into it later to figure it out).
+
+```{r}
+#| label: census-estimateup
+#| include: true
+#| message: false
+#| cache: true
+# list the variables to estimate up
+vars <- c("total_pop", "white_pop", "asian_pop", "hi_pi_combo", 
+          "no_school", "hs_ged", "bachelors", "masters", 
+          "prof_degree", "doctorate", "veterans")
+# create new copy of the precinct data
+precincts_results_2024_acs <- precincts_results_2024
+# estimate up the results from the census block group to the precinct. 
+for (var in vars) {
+  col_name <- paste0(var, "_acs")
+  precincts_results_2024_acs[[col_name]] <- estimate_up(
+    value = acs_data_2022_prepped_geo[[var]],
+    group = matches_2024
+  )
+}
+
+acs_2022_continuous <- acs_data_2022_prepped_geo %>%
+  data.frame() %>%
+  select(-geometry) %>%
+  group_by(match_id_2024) %>%
+  summarise(median_household_income_acs = median(median_household_income, na.rm=T),
+            median_rent_gross_income_acs = median(median_rent_gross_income, na.rm = T),
+            median_age_men_acs = median(median_age_m, na.rm = T),
+            median_age_women_acs = median(median_age_w, na.rm=T)) %>%
+  ungroup()
+
+model2_data <- precincts_results_2024_acs %>%
+  left_join(acs_2022_continuous)
+
+```
+
+It looks like the continuous ACS variables have a fair amount of missingness. We will need to remove or impute those data in our final model later.
+
+```{r}
+#| label: missing-census-data
+#| include: true
+#| message: false
+#| cache: false
+#| fig-height: 6
+# visualize missing data
+gg_miss_var(model2_data) + theme_clean()
+
+```
+
+## Building Our Second Model
+
+For our second model, we include all the ACS variables, but for the ones with missing values, we will impute the missing values with the `mi()` in the model itself. To be safe, we will use the `skew_normal()` distribution for the imputation formulae. We also standardized all the predictors in the model to make it easier to compare the results between predictors and easier to set priors for them.
+
+```{r}
+#| label: model2
+#| include: true
+#| message: false
+#| cache: true
+
+# remove precincts with no neighbors
+model2_data_final <- model2_data %>%
+  filter(grepl("67|73|94",objectid) == FALSE) %>%
+  # standardize the predictors
+  mutate(across(ends_with("_acs"), ~ as.numeric(scale(.x, 
+                                                     center = TRUE, 
+                                                     scale = TRUE))))
+# set prior for the betas
+priors <- prior(normal(0,3), class = "b")
+# set the formulae
+votes <- bf(R_2024 | rate(total_votes_2024) ~ white_pop_acs +
+                             asian_pop_acs +
+                             hi_pi_combo_acs +
+                             no_school_acs +
+                             hs_ged_acs +
+                             bachelors_acs +
+                             masters_acs +
+                             prof_degree_acs +
+                             doctorate_acs + 
+                             veterans_acs +
+                             mi(median_household_income_acs) +
+                            mi(median_age_men_acs) +
+                        mi(median_age_women_acs) +
+                         mi(median_rent_gross_income_acs) +
+                             car(W, type = "bym2",gr=objectid)) + negbinomial()
+mi_income <- bf(median_household_income_acs | mi() ~ white_pop_acs +
+                             asian_pop_acs +
+                             hi_pi_combo_acs +
+                             no_school_acs +
+                             hs_ged_acs +
+                             bachelors_acs +
+                             masters_acs +
+                             prof_degree_acs +
+                             doctorate_acs + 
+                             veterans_acs) + skew_normal()
+mi_rent <- bf(median_rent_gross_income_acs | mi() ~ white_pop_acs +
+                             asian_pop_acs +
+                             hi_pi_combo_acs +
+                             no_school_acs +
+                             hs_ged_acs +
+                             bachelors_acs +
+                             masters_acs +
+                             prof_degree_acs +
+                             doctorate_acs + 
+                             veterans_acs) + skew_normal()
+mi_age_men <- bf(median_age_men_acs | mi() ~ white_pop_acs +
+                             asian_pop_acs +
+                             hi_pi_combo_acs +
+                             no_school_acs +
+                             hs_ged_acs +
+                             bachelors_acs +
+                             masters_acs +
+                             prof_degree_acs +
+                             doctorate_acs + 
+                             veterans_acs) + skew_normal()
+mi_age_women <- bf(median_age_women_acs | mi() ~ white_pop_acs +
+                             asian_pop_acs +
+                             hi_pi_combo_acs +
+                             no_school_acs +
+                             hs_ged_acs +
+                             bachelors_acs +
+                             masters_acs +
+                             prof_degree_acs +
+                             doctorate_acs + 
+                             veterans_acs) + skew_normal() 
+# put it all together in the model
+trump_model2 <- brm(votes + mi_income + mi_rent + mi_age_men + mi_age_women + set_rescor(FALSE),
+                        data = model2_data_final,
+                        data2 = list(W=W),
+                        cores=6,
+                        chains = 4,
+                        init = 0,
+                        iter = 8000,
+                        control = list(adapt_delta = 0.9999999999, 
+                                       max_treedepth=14),
+                        prior=priors)
+
+
+```
+
+The model summary indicates that we have good r-hats, and the posterior predictive plot shows good sampling of the main outcome variable. The coefficients of the predictors for the number of votes for Trump are quite small, but there are some expected trends:
+
+- The larger the population of individuals with bachelors or doctorate degrees as their highest educational attainment, the lower the number of votes for Trump. 
+- The larger the population of veterans, the more votes for Trump there were.
+- Larger white and Hawaiian/Pacific Islander populations were somewhat associated with more votes for Trump. 
+- There was no association between larger Asian populations and changes in the number of votes for Trump.
+
+```{r}
+#| label: model2-summary
+#| include: true
+#| message: false
+#| cache: false
+
+summary(trump_model2)
+pp_check(trump_model2, resp = "R2024")
+```
+
+## Examining the Predicted Results
+
+To examined the predicted results, we first have to determined the imputed values for those variables that had missing data, then use that data set to calculate the final predicted values for each election district.
+
+```{r}
+#| label: model2-preds
+#| include: true
+#| message: false
+#| cache: true
+
+# get the imputed values first
+data_imputed <- trump_model2 %>%
+  predicted_draws(newdata = model2_data_final,
+                  ndraws = 1500) %>%
+  data.frame() %>%
+  select(-.row:-.draw) %>%
+  dplyr::filter(`.category` != "R2024") %>%
+  pivot_wider(names_from = .category,
+              values_from = .prediction,
+              values_fn = median) %>%
+  mutate(median_household_income_acs = case_when(
+    is.na(median_household_income_acs) == TRUE ~ medianhouseholdincomeacs,
+    .default = median_household_income_acs
+  ),
+  median_rent_gross_income_acs = case_when(
+    is.na(median_rent_gross_income_acs) == TRUE ~ medianrentgrossincomeacs,
+    .default = median_rent_gross_income_acs
+  ),
+  median_age_men_acs = case_when(
+    is.na(median_age_men_acs) == TRUE ~ medianagemenacs,
+    .default = median_age_men_acs
+  ),
+  median_age_women_acs = case_when(
+    is.na(median_age_women_acs) == TRUE ~ medianagewomenacs,
+    .default = median_age_women_acs
+  )
+  ) 
+
+trump_model_preds2 <- trump_model2 %>%
+  predicted_draws(newdata = data_imputed,
+                  ndraws = 1500) %>%
+  data.frame() %>%  # change to df to drop spatial element so can use median_hdi()
+  filter(.category == "R2024") %>%
+  group_by(dp) %>%
+  median_hdi(.prediction)
+
+ predicted_percentages_model2 <- model2_data_final %>%
+   left_join(trump_model_preds2) %>%
+   mutate(`Expected Percentage for Trump` = `.prediction` / total_votes_2024,
+          `Original Percentage for Trump` = R_2024 / total_votes_2024,
+          `Change in Percentage for Trump` = `Expected Percentage for Trump` -`Original Percentage for Trump`)
+
+ election_plot2_1 <- predicted_percentages_model2 %>%
+   ggplot() +
+   geom_sf(aes(fill = `Expected Percentage for Trump`)) +
+   theme_void() +
+   scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                        low = "#313695",
+                        high = "#a50026",
+                        midpoint=0.5,
+                        mid = "#ffffbf")
+ election_plot2_1
+ 
+ # zoom in on oahu
+ predicted_percentages_model2 %>%
+   filter(county == "OAHU") %>%
+   ggplot() +
+   geom_sf(aes(fill = `Expected Percentage for Trump`)) +
+   theme_void() +
+   scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                        low = "#313695",
+                        high = "#a50026",
+                        midpoint=0.5,
+                        mid = "#ffffbf")
+
+ election_plot2_2 <- predicted_percentages_model2 %>%
+   ggplot() +
+   geom_sf(aes(fill = `Change in Percentage for Trump`)) +
+   theme_void() +
+   scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                        low = "#313695",
+                        high = "#a50026",
+                        midpoint=0,
+                        mid = "#ffffbf")
+ election_plot2_2
+ 
+# zoom in on oahu
+ predicted_percentages_model2 %>%
+   filter(county == "OAHU") %>%
+   ggplot() +
+   geom_sf(aes(fill = `Change in Percentage for Trump`)) +
+   theme_void() +
+   scale_fill_gradient2(labels = scales::label_percent(scale=100),
+                        low = "#313695",
+                        high = "#a50026",
+                        midpoint=0,
+                        mid = "#ffffbf")
+
+ predicted_percentages_model2 %>%
+   ggplot(aes(x=reorder(dp,-`Change in Percentage for Trump`),
+              y = `Change in Percentage for Trump`)) +
+   geom_bar(stat="identity") +
+   theme_clean() +
+   theme(axis.text.x = element_blank(),
+         panel.grid = element_blank()) +
+   ylab("Change in Percentage of Vote for Trump") +
+   scale_y_continuous(labels = scales::percent) +
+   xlab("Precinct")
+
+```
+
+This new model leads to slightly larger changes in the predicted number of votes for Trump, since we now have other covariates that influence how the model calculates the predicted number of votes. 
+
+
+```{r}
+#| label: model2-preds2
+#| include: true
+#| message: false
+#| cache: true
+
+
+trump_model_votes_overall2 <- trump_model2 %>%
+  predicted_draws(newdata = data_imputed,
+                  ndraws = 1500) %>%
+  data.frame() %>%  # change to df to drop spatial element so can use median_hdi()
+  filter(.category == "R2024") %>%
+  group_by(`.draw`) %>%
+  summarize(total_votes_trump_predicted = sum(`.prediction`,na.rm = TRUE),
+            total_votes_overall = sum(total_votes_2024,na.rm = TRUE)) %>%
+  mutate(estimated_percent_trump = total_votes_trump_predicted / total_votes_overall) %>%
+  ungroup()
+
+
+
+trump_model_votes_overall2 %>%
+  ggplot(aes(x = estimated_percent_trump)) +
+  stat_halfeye() + 
+  scale_x_continuous(labels = scales::percent) +
+  theme_clean() + 
+  ylab("") +
+  xlab("Estimated Statewide Vote Percentage for Trump")
+```
+
+This new model still predicts that `r scales::percent(median(trump_model_votes_overall2$estimated_percent_trump),accuracy=0.01)` of voters statewide supported Trump, which is the same as the observed percentage of `r precincts_results_2024_final %>% data.frame() %>% summarize(totalR = sum(R_2024), totalvotes = sum(total_votes_2024)) %>% mutate(percT = scales::percent(totalR / totalvotes,accuracy=0.01)) %>% dplyr::select(percT) %>% unlist %>% unname` (excluding the three precincts that were removed for not having any neighbors). 
+
+
+# Wrapping Up
+
+Modelling the election results for Trump in Hawaiʻi using CAR models helped provide us with a better understanding of the level of support for Trump across the electorate in each of the state's election precincts. Adding in census data to the model provided slightly more precise measures, but doesn't substantially change the results. Finding a way to calculate the ACS's measurement error for the aggregated results so that we could add that to the model may be helpful, as well as further examining which ACS variables to include. It may also be interesting to model the results based on the number of registered votes instead of the number of voters who actually voted. But this is enough time thinking about Trump for now.
+
+
+# Futher Reading
+
+For additional reading on CAR and other spatial models see:
+
+- [https://mc-stan.org/learn-stan/case-studies/icar_stan.html](https://mc-stan.org/learn-stan/case-studies/icar_stan.html)
+- [Overview of Spatial Incidence Models](https://atlas.cancer.org.au/ebook/ebook2/Chapter_5.html)
+- [Spatial Models](https://becarioprecario.bitbucket.io/inla-gitbook/ch-spatial.html)
+- [Areal data](https://www.paulamoraga.com/book-geospatial/sec-arealdatatheory.html)
+
