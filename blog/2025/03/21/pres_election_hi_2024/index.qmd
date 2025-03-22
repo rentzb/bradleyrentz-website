@@ -61,11 +61,11 @@ Hawaiʻi is a solidly blue state, but as some local news sources have reported (
 
 # Why use Bayesian CAR models?
 
-Elections are in part spatial phenomena. We know that for a variety of social and historical reasons, the geographic community one lives in the U.S. tends to be correlated with one's race/ethnicity, socio-economic status, education level, occupation, income, access to government services, health care, and high-quality food, quality of live, and many other factors. Because of that, one's geographic community is also correlated with one's political views. We also know that while each community may tend to have specific political views, those political views are also influenced their neighboring communities and are in turn influenced by their neighbors as well.
+Elections are in part spatial phenomena. We know that for a variety of social and historical reasons, the geographic community one lives in the U.S. tends to be correlated with one's race/ethnicity, socioeconomic status, education level, occupation, income, access to government services, health care, and high-quality food, quality of live, and many other factors. Because of that, one's geographic community is also correlated with one's political views. We also know that while each community may tend to have specific political views, those political views  also influenced their neighboring communities and are in turn influenced by their neighbors as well.
 
 Elections then are a measure of a given community's underlying political views at a specific time. Since we want to know what the underlying views are, we need to create a model that takes into account the spatial (aka community-level) correlation of political views, as well as how nearby communities may influence those views as well. 
 
-To take into account the spatial correlations, we'll use a version of CAR models called the [Besag-York-Mollié](https://doi.org/10.1007/BF00116466) model that is frequently used to model incidence rates for diseases. This model includes two set of spatial  correlations. First it models the correlation of a geographic area with all of the areas that border it. Then it models a random effect for each geographic unit so that it captures the unique variation within each unit.  
+To take into account the spatial correlations, we'll use a version of CAR models called the [Besag-York-Mollié](https://doi.org/10.1007/BF00116466) model that is frequently used to model spatial incidence rates for diseases. This model includes two set of spatial  correlations. First it models the correlation of a geographic area with all of the areas that border it. Then it models a random effect for each geographic unit so that it captures the unique variation within each geographic unit.  
 
 But before we get too deep into the model, we need to gather the data first.
 
@@ -102,7 +102,7 @@ theme_clean <- function() {
 ```
 # Prepping HI Election Data
 
-The official precinct-level election results are available from the [Hawaiʻi Office of Elections](https://elections.hawaii.gov/wp-content/results/media.txt). The election results contain results for all elections that happened in the state, so we want to import the data and limit the them to only the presidential results. 
+The official precinct-level election results are available from the [Hawaiʻi Office of Elections](https://elections.hawaii.gov/wp-content/results/media.txt). The election results file contains results for all elections that happened in the state, so we want to import the data and then limit them to only the presidential results. 
 
 ```{r}
 #| label: import-election-data
@@ -185,7 +185,7 @@ To dig into this more, we need to download the election precinct shape files fro
 #| label: import-election-shapefile
 #| include: true
 #| message: false
-precincts_shape_2024 <- st_read("data/Election_Precincts.shp")
+precincts_shape_2024 <- st_read("data/Election_Precincts.shp", quiet = TRUE)
 
 # join the election results to the shape file
 precincts_results_2024 <- precincts_shape_2024 %>%
@@ -226,7 +226,7 @@ W.nb <- poly2nb(precincts_results_2024_final, row.names = precincts_results_2024
 W <- nb2mat(W.nb, style="B")
 ```
 
-Now we create our first model. This model will only include an intercept and spatial correlations. We will use a negative binomial model since we are modelling count data that may be overdispersed. For the outcome, we will used the number of votes Trump received in each precinct, and we will include a `rate()` argument to indicate the total number of votes cast in that precinct, since each precinct can vary in population. We also need to use the `data2` argument to tell brms where to find the neighborhood weight matrix. I am using more iterations than usual for the model, since the CAR models otherwise tend to have too high r-hat values which represent poor mixing of the model's chains.
+Now we create our first model. This model will only include an intercept and spatial correlations. We will use a negative binomial model since we are modelling count data that may be overdispersed. For the outcome, we will used the number of votes Trump received in each precinct, and we will include a `rate()` argument to indicate the total number of votes cast in that precinct, since each precinct can vary in the number of actual votes cast. We also need to use the `data2` argument to tell `brms` where to find the neighborhood weight matrix. I am also using more iterations than usual for the model, since the CAR models otherwise tend to have too high r-hat values which indicate poor mixing of the model's chains.
 
 ```{r}
 #| label: model1
@@ -257,7 +257,7 @@ summary(trump_model)
 pp_check(trump_model)
 ```
 
-Let's update our map to see what the expected support for Trump is. First, we need to generated the predicted values for each precinct using `predicted_draws()` then calculate the median predicted value with `median_hdi()`. Finally we calculate the expected percentage of votes by using the observed total number of votes and compare that percentaged to the observed percentage of votes for Trump.
+Let's update our map to see what the expected support for Trump is. First, we need to generate the predicted values for each precinct using `predicted_draws()` then calculate the median predicted value with `median_hdi()`. Finally we calculate the expected percentage of votes by using the observed total number of votes and compare that percentage to the observed percentage of votes for Trump.
 
 ```{r}
 #| label: model1-preds
@@ -313,7 +313,7 @@ predicted_percentages_model1 %>%
 
 ```
 
-The results show that the vast majority of the precincts have little change from the observed percentage. However, precincts that were strongly in favor of Trump were decreased somewhat, especially those surrounded by precincts with lower support. Similarly, precincts with the lowest number of votes for Trump were increased somewhat. This pattern clearly demonstrated the effects of partial pooling from the random effects of the model, where values are pulled toward the mean, as well as the spatial correlation where values are influenced by their neighbors.
+The results show that the vast majority of the precincts have little change from the observed percentage. However, precincts that were strongly in favor of Trump were decreased somewhat, especially those surrounded by precincts with lower support. Similarly, precincts with the lowest number of votes for Trump were increased somewhat. This pattern clearly demonstrates the effects of partial pooling from the random effects of the model, where values are pulled toward the mean, as well as the spatial correlation where values are influenced by their neighbors.
 
 We can also calculate the overall support for Trump across the state by aggregating across the predicted results. 
 
@@ -342,9 +342,9 @@ trump_model_votes_overall %>%
   xlab("Estimated Statewide Vote Percentage for Trump")
 ```
 
-The model predicts that `r scales::percent(median(trump_model_votes_overall$estimated_percent_trump),accuracy=0.01)` of voters statewide supported Trump which is nearly identical to the observed percentage of `r precincts_results_2024_final %>% data.frame() %>% summarize(totalR = sum(R_2024), totalvotes = sum(total_votes_2024)) %>% mutate(percT = scales::percent(totalR / totalvotes,accuracy=0.01)) %>% dplyr::select(percT) %>% unlist %>% unname` (excluding the three precincts that were removed for not having any neighbors). While our model has the same statewide estimate, it does provide us with two sets of important insights. First, we now have a credible interval for the electoral support for Trump (37.0—37.8%), so that we can specify how certain we are about the level of support for Trump. Second, we potentially more accurate precinct-level information about the support for Trump. 
+The model predicts that `r scales::percent(median(trump_model_votes_overall$estimated_percent_trump),accuracy=0.01)` of voters statewide supported Trump which is nearly identical to the observed percentage of `r precincts_results_2024_final %>% data.frame() %>% summarize(totalR = sum(R_2024), totalvotes = sum(total_votes_2024)) %>% mutate(percT = scales::percent(totalR / totalvotes,accuracy=0.01)) %>% dplyr::select(percT) %>% unlist %>% unname` (excluding the three precincts that were removed for not having any neighbors). While our model has the same statewide estimate, it does provide us with two sets of important insights. First, we now have a credible interval for the electoral support for Trump (37.0—37.8%), so that we can specify how certain we are about the level of support for Trump. Second, we have potentially more accurate precinct-level information about the support for Trump. 
 
-Now let's move on to see if we can improve our model but adding additional covariates.
+Now let's move on to see if we can improve our model by adding additional covariates.
 
 # Our Second CAR Model
 Our first model only included the spatial correlations and precinct-level effect on the vote. As expected, these did not deviate much from the observed vote results. Now, we want to explore what happens to our model if we add other information about each community, such as education-level, income, age distributions, and other factors that may be correlated with how each community voted.
@@ -410,7 +410,7 @@ Next, we import the census block group shape files which can also be downloaded 
 #| message: false
 #| cache: true
 # import census block group shape file
-hi_bg_shape_2020 <- st_read("data/hi_bg_2020_bound.shp")
+hi_bg_shape_2020 <- st_read("data/hi_bg_2020_bound.shp", quiet = TRUE)
 
 # create some additional variables for the ACS data
 acs_data_2022_prepped <- acs_data_2022 %>%
@@ -438,7 +438,7 @@ precincts_results_2024$match_id_2024 <- 1:nrow(precincts_results_2024)
 
 ## Aggregating ACS Block Group Results to Election Precincts.
 
-After matching the precincts to the census block groups, the values from the smaller sized block groups need to be aggregated up to the larger election precincts using the `estimate_up()` function. This only directly works with counts. For continuous values, we will calculate the median for all the block groups within each precinct. There may be a better way to do that, but we'll use that for now. One additional limitation of aggregating the census results, is that we lose the ability use the ACS's reported measurement error values in the model, which means our model may be more confident in the ACS values that it otherwise should be. There may be ways to aggregate the measures errors (such as [this guide](https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch08.pdf) from the U.S. Census Bureau, but I need to dig further into it later to figure it out).
+After matching the precincts to the census block groups, the values from the smaller sized block groups need to be aggregated up to the larger election precincts using the `estimate_up()` function. This only directly works with counts. For continuous values, we will calculate the median for all the block groups within each precinct. There may be a better way to do that, but we'll use that for now. One additional limitation of aggregating the census results, is that we lose the ability to use the ACS's reported measurement error values in the model, which means our model may be more confident in the ACS values that it otherwise should be. There may be ways to aggregate the measures errors (such as [this guide](https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch08.pdf) from the U.S. Census Bureau), but I need to dig further into it later to figure it out and may make a new blog post about it.
 
 ```{r}
 #| label: census-estimateup
@@ -471,11 +471,12 @@ acs_2022_continuous <- acs_data_2022_prepped_geo %>%
   ungroup()
 
 model2_data <- precincts_results_2024_acs %>%
-  left_join(acs_2022_continuous)
+  left_join(acs_2022_continuous) %>%
+  dplyr::select(-zeropop)
 
 ```
 
-It looks like the continuous ACS variables have a fair amount of missingness. We will need to remove or impute those data in our final model later.
+It looks like the continuous ACS variables have a fair amount of missingness (ignore the  variable). We will need to remove or impute those data in our final model later.
 
 ```{r}
 #| label: missing-census-data
@@ -490,7 +491,7 @@ gg_miss_var(model2_data) + theme_clean()
 
 ## Building Our Second Model
 
-For our second model, we include all the ACS variables, but for the ones with missing values, we will impute the missing values with the `mi()` in the model itself. To be safe, we will use the `skew_normal()` distribution for the imputation formulae. We also standardized all the predictors in the model to make it easier to compare the results between predictors and easier to set priors for them.
+For our second model, we include all the ACS variables, but for the ones with missing values, we will impute the missing values with the `mi()` in the model itself. To be safe, we will use the `skew_normal()` distribution for the imputation formulae, since the underlying distribution may be somewhat skewed. We also standardized all the predictors in the model to make it easier to compare the results between predictors and easier to set priors for them.
 
 ```{r}
 #| label: model2
@@ -597,7 +598,7 @@ pp_check(trump_model2, resp = "R2024")
 
 ## Examining the Predicted Results
 
-To examined the predicted results, we first have to determined the imputed values for those variables that had missing data, then use that data set to calculate the final predicted values for each election district.
+To examine the predicted results, we first have to determine the imputed values for those variables that had missing data, then use that dataset to calculate the final predicted values for each election precinct.
 
 ```{r}
 #| label: model2-preds
@@ -743,7 +744,7 @@ This new model still predicts that `r scales::percent(median(trump_model_votes_o
 
 # Wrapping Up
 
-Modelling the election results for Trump in Hawaiʻi using CAR models helped provide us with a better understanding of the level of support for Trump across the electorate in each of the state's election precincts. Adding in census data to the model provided slightly more precise measures, but doesn't substantially change the results. Finding a way to calculate the ACS's measurement error for the aggregated results so that we could add that to the model may be helpful, as well as further examining which ACS variables to include. It may also be interesting to model the results based on the number of registered votes instead of the number of voters who actually voted. But this is enough time thinking about Trump for now.
+Modelling the election results for Trump in Hawaiʻi using CAR models helped provide us with a better understanding of the level of support for Trump across the electorate in each of the state's election precincts. Adding in census data to the model provided slightly more precise measures, but doesn't substantially change the results. Finding a way to calculate the ACS's measurement error for the aggregated results so that we could add that to the model may be helpful, as well as further examining which ACS variables to include. It may also be interesting to model the results based on the number of registered votes instead of the number of voters who actually voted. But I've already spent enough time thinking about Trump for now.
 
 
 # Futher Reading
