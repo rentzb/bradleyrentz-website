@@ -212,7 +212,7 @@ ggplotly(election_plot1)
 
 Let's create our first BYM model to better understand the actual expected level of support for Trump in each election precinct. 
 
-First we need to create a list of neighboring election precincts using the `poly2nb()` function of the `spdep` package and the create a weights matrix from the neighbors list with the `nb2mat()` function. We will also need to unfortunately remove any precincts that do not have any neighbors.
+First, we need to create a list of neighboring election precincts using the `poly2nb()` function of the `spdep` package and then create a weights matrix from the neighbors list with the `nb2mat()` function. We will also need to unfortunately remove any precincts that do not have any neighbors.
 
 ```{r}
 #| label: neighbors
@@ -226,7 +226,7 @@ W.nb <- poly2nb(precincts_results_2024_final, row.names = precincts_results_2024
 W <- nb2mat(W.nb, style="B")
 ```
 
-Now we create our first model. This model will only include an intercept and spatial correlations. We will use a negative binomial model since we are modelling count data that may be overdispersed. For the outcome, we will used the number of votes Trump received in each precinct, and we will include a `rate()` argument to indicate the total number of votes cast in that precinct, since each precinct can vary in the number of actual votes cast. We also need to use the `data2` argument to tell `brms` where to find the neighborhood weight matrix. I am also using more iterations than usual for the model, since the CAR models otherwise tend to have too high r-hat values which indicate poor mixing of the model's chains.
+Now we create our first model. This model will only include an intercept and spatial correlations. We will use a negative binomial model since we are modelling count data that may be overdispersed. For the outcome, we will use the number of votes Trump received in each precinct, and we will include a `rate()` argument to indicate the total number of votes cast in that precinct, since each precinct can vary in the number of actual votes cast. We also need to use the `data2` argument to tell `brms` where to find the neighborhood weight matrix. I am also using more iterations than usual for the model, since the CAR models otherwise tend to have too high r-hat values which indicate poor mixing of the model's chains.
 
 ```{r}
 #| label: model1
@@ -247,7 +247,7 @@ trump_model <- brm(bf(R_2024 | rate(total_votes_2024) ~ 1 +
 
 ```
 
-At first glance the model seems to have run fine with good r-hat values and the posterior predictive check plots shows that we are sampling the outcome fairly well. 
+At first glance the model seems to have run fine with good r-hat values and the posterior predictive check plots show that we are sampling the outcome fairly well. 
 
 ```{r}
 #| label: model1-summary
@@ -358,7 +358,7 @@ This task is more challenging since we currently do not have those data availabl
 
 ## Linking the Election Data to Census Data
 
-Since we want to model each communities' support for Trump, we need to add other information about each community to our model. To do this, we can download block group-level data from the U.S. Census Bureau (assuming those data sets haven't been removed by the Trump administration by the time you are reading this) and will include a variety of variables from the 2022 American Community Survey that could be associated with how one voted.
+Since we want to model each communities' support for Trump, we need to add other information about each community to our model. To do this, we can download block group-level data from the U.S. Census Bureau (assuming those datasets haven't been removed by the Trump administration by the time you are reading this) and will include a variety of variables from the 2022 American Community Survey that could be associated with how one voted.
 
 ```{r}
 #| label: download-census-data
@@ -396,8 +396,6 @@ acs_data_2022 <- get_acs(geography = "cbg",
 
 head(acs_data_2022)
 ```
-
-
 
 ## Match the ACS Block Groups to Election Precincts
 
@@ -707,7 +705,7 @@ trump_model_preds2 <- trump_model2 %>%
 
 ```
 
-This new model leads to slightly larger changes in the predicted number of votes for Trump, since we now have other covariates that influence how the model calculates the predicted number of votes. 
+This new model leads to slightly larger changes in the predicted number of votes for Trump among precincts, since we now have other covariates that influence how the model calculates the predicted number of votes. 
 
 
 ```{r}
