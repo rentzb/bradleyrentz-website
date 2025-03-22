@@ -55,7 +55,7 @@ options(
 ```
 
 
-Now that the 2024 U.S. presidential election was a few months ago and we are feeling the brunt of the new administration's actions, it time to revisit those results to see what new information we can learn. 
+Now that the 2024 U.S. presidential election was a few months ago and we are feeling the brunt of the new administration's actions, it is time to revisit those results to see what new information we can learn. 
 
 Hawaiʻi is a solidly blue state, but as some local news sources have reported (see for example this [Civil Beat](https://www.civilbeat.org/2024/11/trumps-support-in-hawaii-has-grown-since-he-first-appeared-on-ballots-in-2016/) article), the vote share for Trump has risen substantially over time. In this post, I attempt to apply Bayesian Conditional Autoregressive (CAR) Models to try to model the extent of support for Trump across the state among the electorate. 
 
