@@ -10,9 +10,10 @@ format:
     code-tools: true
     comments:
       giscus: 
-        repo: rentzb/rentz-website
-        category: Blog comments
-        category-id: DIC_kwDOIg6EJc4CSz92
+        repo: rentzb/bradleyrentz-website
+        repo-id: R_kgDOOMsZ-g
+        category: General
+        category-id: DIC_kwDOOMsZ-s4CoVyA
         mapping: pathname
     quarto-template-params:
       banner-header-class: "blog-post"
