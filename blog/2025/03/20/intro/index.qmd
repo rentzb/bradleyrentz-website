@@ -1,0 +1,48 @@
+---
+title: "Introducing My New Blog"
+date: 2025-03-20
+description: "A beginning of a new era."
+
+
+
+categories:
+  - Introduction
+
+
+format:
+  html:
+    shift-heading-level-by: 1
+    toc-depth: 4
+    highlight-style: arrow
+
+citation: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 6 * 0.618,
+  fig.retina = 3,
+  dev = "ragg_png",
+  fig.align = "center",
+  collapse = TRUE,
+  out.width = "95%",
+  warning = FALSE,
+  cache.extra = 1234  # Change number to invalidate cache
+)
+
+options(
+  digits = 4,
+  width = 300
+)
+```
+
+
+Welcome to my new blog! Now that I am about to be unemployed, thanks to DOGE cutting all of my research funding, I decided to return to making periodic blog posts. My posts will mostly focus on R coding, statistics, and whatever research projects I'm currently working on. The posts will be written in a mostly tutorial-like fashion, so that you can follow along with the code and data that I'm using. 
+
+
