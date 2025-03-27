@@ -191,7 +191,7 @@ Measures in the Honolulu City Council can be introduced by either one or two cou
 
 Overall, council member Dos Santos-Tam introduced measures with 7 other council members (all except with council member Tupola). On the other hand, council member Say overall only introduced measures with two other members. 
 
-We can also see patterns about who tended to work more often with whom. First there there is the highly colloborative group, especially for bills, that comprises council members Dos Santos-Tam, Weyer, and Cordero. The next group is centered on council chair Waters. Waters cointroduced several bills with member Weyer and several resolutions with member Kiaʻāina, but Kiaʻāina and Weyer did not work directly together at all. Council members Tupola and Tulba form another group and most frequently introduced measures with each other, but occassionally worked with other highly collaborative members like Dos Santos-Tam or Weyer. Council members Okimoto and Say introduced few measures overall, and when they did they worked with members of the highly collaborative group or with chair Waters. 
+The network graphs all us to see patterns about who tended to work more often with whom. First there is the highly colloborative group, especially for bills, that comprises council members Dos Santos-Tam, Weyer, and Cordero. The next group is centered on council chair Waters. Waters cointroduced several bills with member Weyer and several resolutions with member Kiaʻāina, but Kiaʻāina and Weyer did not cointroduce measures together at all. Council members Tupola and Tulba form another group and most frequently introduced measures with each other, but occassionally worked with other highly collaborative members like Weyer. Council members Okimoto and Say introduced few measures overall, and when they did they worked with members of the highly collaborative group or with chair Waters. 
 
 ```{r}
 #| label: cointroduced
@@ -305,7 +305,7 @@ committes_2024 %>%
 Determining what measures each city council member voted no on is not as easy as just displaying all the no votes. For example, a no vote could be against deferring/postponing a measure (which is a vote in favor of the measures) or against specific amendments, which might change the nature of the measure. A member could also vote no on a measure in a committee, but ultimately vote yes on the measure in a full council meeting. Because of this, we will only look at each member's most recent no vote on each measure and exclude votes for postponing. I also include the description of that no vote and how many total council members voted no for additional context.
 
 ### Cordero
-Member Cordero voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "CORDERO") %>% nrow()` measures in 2024.
+Member Cordero voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "CORDERO") %>% nrow()` measures in 2024. Some notable votes include: voting no on overriding the Mayor's veto of a bill that would have expanded firework access, no on amendments to a bill about the construction of affordable housing, and no on the first reading of a bill to amend the noise control ordinance. 
 
 ```{r}
 #| label: corderono
@@ -340,7 +340,7 @@ get_no_votes(votes_2024, name = "CORDERO")
 ```
 
 ### Dos Santos-Tam
-Member Dos Santos-Tam voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "DOS SANTOS-TAM") %>% nrow()` measures in 2024.
+Member Dos Santos-Tam voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "DOS SANTOS-TAM") %>% nrow()` measures in 2024. Some notable votes include: voting no on overriding the Mayor's veto of a bill that would have expanded firework access and no on amendments to a bill about the construction of affordable housing. 
 
 ```{r}
 #| label: dstno
@@ -352,7 +352,7 @@ get_no_votes(votes_2024, name = "DOS SANTOS-TAM")
 ```
 
 ### Kiaʻāina
-Member Kiaʻāina voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "KIAʻĀINA") %>% nrow()` measures in 2024.
+Member Kiaʻāina voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "KIAʻĀINA") %>% nrow()` measures in 2024. Some notable votes include: voting no on a ban of single use plastics in city and county buildings and voting no on overriding the Mayor's veto of a bill that would have expanded firework access.
 
 ```{r}
 #| label: KIAʻĀINAno
@@ -365,6 +365,9 @@ get_no_votes(votes_2024, name = "KIAʻĀINA")
 ### Okimoto
 Member Okimoto voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "OKIMOTO") %>% nrow()` measures in 2024.
 
+Some notable votes include: Voting no on a ban of single use plastics in city and county buildings, voting no on a resolution to allow the city to initiate legal action against the firearm industry, and voting against several resolutions relating to litigation against the city.
+
+
 ```{r}
 #| label: OKIMOTOno
 #| include: true
@@ -375,6 +378,8 @@ get_no_votes(votes_2024, name = "OKIMOTO")
 
 ### Say
 Member Say voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "SAY") %>% nrow()` measures in 2024.
+
+Some notable votes include: Voting no on a ban of single use plastics in city and county buildings.
 
 ```{r}
 #| label: SAYno
@@ -387,6 +392,8 @@ get_no_votes(votes_2024, name = "SAY")
 ### Tulba
 Member Tulba voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "TULBA") %>% nrow()` measures in 2024.
 
+Some notable votes include: Voting no on a ban of single use plastics in city and county buildings and voting no on a resolution to allow the city to initiate legal action against the firearm industry.
+
 ```{r}
 #| label: TULBAno
 #| include: true
@@ -397,6 +404,8 @@ get_no_votes(votes_2024, name = "TULBA")
 
 ### Tupola
 Member Tupola voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "TUPOLA") %>% nrow()` measures in 2024.
+
+Some notable votes include: Voting no on a ban of single use plastics in city and county buildings, voting against a resolution requesting the state legislature to give the counties the power to phase out nonconfirming short-term rentals, and voting no on the first reading of a bill to amend the noise control ordinance.
 
 ```{r}
 #| label: TUPOLAno
@@ -419,6 +428,8 @@ get_no_votes(votes_2024, name = "WATERS")
 
 ### Weyer
 Member Weyer voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "WEYER") %>% nrow()` measures in 2024.
+
+Some notable votes include: voting no on overriding the Mayor's veto of a bill that would have expanded firework access and no on the first reading of a bill to amend the noise control ordinance.
 
 ```{r}
 #| label: WEYERno
