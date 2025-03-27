@@ -3,7 +3,7 @@ title: "Introducing the New hnlcouncilR R Package"
 date: 2025-03-26
 description: "Download and analyze data about Honolulu City Council resolutions and bills"
 
-image: img/model2-preds-2.png
+image: img/cointroduced-1.png
 twitter-card: 
     image: "img/cointroduced-1.png"
 open-graph: 
