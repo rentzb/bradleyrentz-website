@@ -122,7 +122,7 @@ Let's now look at a more real example.
 
 # Honolulu City Council in 2024
 
-Let's see what the Honolulu City Council did in 2024. To do that, we need to download data for all measures between January 1, 2022 through December 31, 2024, since bills are given two years to be passed and measures are given 1 year. Our starting measure will be the first bill introduced in 2022, BILL001(22) which has measure number of 2056. The ending measure will be the last measure introduced in 2024, which is RES24-298, which is measure number 3162. We will then limit the data to only measures that had an event during the calendar year of 2024.
+Let's see what the Honolulu City Council did in 2024. To do that, we need to download data for all measures between January 1, 2022 through December 31, 2024, since bills are given two years to be passed and resolutions are given 1 year. Our starting measure will be the first bill introduced in 2022, BILL001(22) which has measure number of 2056. The ending measure will be the last measure introduced in 2024, which is RES24-298, which is measure number 3162. We will then limit the data to only measures that had an event during the calendar year of 2024.
 
 ```{r}
 #| label: download-hnl-data-2024
@@ -187,7 +187,7 @@ measures_2024 %>%
 
 ## Which council members introduced measures together?
 
-Measures in the Honolulu City Council can be introduced by either one or two council members. We can visualize how often each council member introduces measures with other members using the `cointro_network_graph()` function. Each line (or edge) represents a unique measure that was introduced by those two council members. 
+Measures in the Honolulu City Council can be introduced by either one or two council members. We can visualize how often each council member introduces measures with other members in 2024 using the `cointro_network_graph()` function. Each line (or edge) represents a unique measure that was introduced by those two council members. 
 
 Overall, council member Dos Santos-Tam introduced measures with 7 other council members (all except with council member Tupola). On the other hand, council member Say overall only introduced measures with two other members. 
 
