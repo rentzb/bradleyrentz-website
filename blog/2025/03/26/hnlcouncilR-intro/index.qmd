@@ -1,0 +1,429 @@
+---
+title: "Introducing the New hnlcouncilR R Package"
+date: 2025-03-26
+description: "Download and analyze data about Honolulu City Council resolutions and bills"
+
+image: img/model2-preds-2.png
+twitter-card: 
+    image: "img/cointroduced-1.png"
+open-graph: 
+    image: "img/cointroduced-1.png"
+
+categories:
+  - R
+  - Hawaii
+  - Honolulu
+  - Honolulu City Council
+  - web scraping
+
+
+format:
+  html:
+    shift-heading-level-by: 1
+    toc-depth: 4
+    highlight-style: arrow
+
+citation: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 6 * 0.618,
+  fig.retina = 3,
+  dev = "ragg_png",
+  fig.align = "center",
+  collapse = TRUE,
+  out.width = "95%",
+  warning = FALSE,
+  cache.extra = 1234  # Change number to invalidate cache
+)
+
+options(
+  digits = 4,
+  width = 300
+)
+```
+
+
+Local governments in the U.S. are usually the level of government that people directly interact with most often, since they typically provide essential services that people need to survive and maintain critical infrastructure to ensure functioning cities and counties. Despite that, local government issues often get less attention than federal and state ones. Many people do not know what their local elected officials are doing and what measures (bills and resolutions) they are considering. To help increase transparency, I created a new R package, [`hnlcouncilR`](https://rentzb.github.io/hnlcouncilR/), to make it easier to see what measures the Honolulu City Council, my local city council, have voted on and are currently considering. The package can be installed from GitHub using `pak::pak("rentzb/hnlcouncilR")`.
+
+In this blog post, I demonstrate how to use the `hnlcouncilR` package and provide some sample analyses to show what can be done with it. 
+
+
+To get started we will be using these packages.
+
+```{r}
+#| label: libraries
+#| include: true
+#| message: false
+library(hnlcouncilR)     # package for downloading HNL City Council data
+library(tidyverse)       # ggplot, dplyr, %>%, and friends
+library(janitor)         # data cleaning tools
+library(kableExtra)      # for displaying tables
+library(DT)              # for interactive tables
+library(ggokabeito)      # for color palettes
+
+
+# Custom ggplot theme to make pretty plots
+# Get the News Cycle font at https://fonts.google.com/specimen/News+Cycle
+theme_clean <- function() {
+  theme_minimal(base_family = "News Cycle") +
+    theme(panel.grid.minor = element_blank(),
+          plot.title = element_text(face = "bold"),
+          axis.title = element_text(face = "bold"),
+          strip.text = element_text(face = "bold", size = rel(1), hjust = 0),
+          strip.background = element_rect(fill = "grey80", color = NA),
+          legend.title = element_text(face = "bold"))
+}
+
+```
+# How `hnlcouncilR` works
+
+The `hnlcouncilR` package downloads data for selected measures from the [Honolulu City Council's website](https://hnldoc.ehawaii.gov/hnldoc) using the `rvest` package and then reformats them into a tibble that can be used for other analysis. The main function of the package is `get_council_measures()`. To use it, we pick a measure to start with and a measure to end with. The function will attempt to download all measures in that range. Unfortunately, the measure's number that we need to use does not correspond to its actual measure name or number, but is rather a sequential number only used on the council's website. To determine the measure's number, search for the measure and then look at its url. For example the first measure of 2025 is RES25-001 and it has a url of https://hnldoc.ehawaii.gov/hnldoc/measure/3163. The four digit number in the url, 3163, is the measure number that we need to use. 
+
+```{r}
+#| label: download-hnl-data
+#| include: true
+#| message: false
+#| cache: true
+# download a few sample measures
+sample_measures <- get_council_measures(start_measure = 3163,
+                                        end_measure = 3165)
+sample_measures %>%
+  head() %>%
+  kable(booktabs = TRUE)
+
+```
+
+The function returns a tibble with one row per "event" for each of the measures within that range. Events include things like being introduced, being voted on in a committee or by the full council, providing public notice of a hearing, and being sent to the mayor for their review. The tibble also contains vote information (if a vote took place), who introduced the measure, and whether it was introduced by request. For more detailed vote information, we can use the `get_votes()` function on the data we already downloaded.
+
+```{r}
+#| label: votes-hnl
+#| include: true
+#| message: false
+#| cache: false
+# download a few sample measures
+
+sample_votes <- get_votes(sample_measures)
+sample_votes %>%
+  head() %>%
+  kable(booktabs = TRUE)
+```
+
+The `get_votes()` function returns a long version of the data where there is one row for each voting event by measure by council member. The non-voting events were removed from the data. This allows us to see how each member voted as the measures progressed. 
+
+Let's now look at a more real example.
+
+# Honolulu City Council in 2024
+
+Let's see what the Honolulu City Council did in 2024. To do that, we need to download data for all measures between January 1, 2022 through December 31, 2024, since bills are given two years to be passed and measures are given 1 year. Our starting measure will be the first bill introduced in 2022, BILL001(22) which has measure number of 2056. The ending measure will be the last measure introduced in 2024, which is RES24-298, which is measure number 3162. We will then limit the data to only measures that had an event during the calendar year of 2024.
+
+```{r}
+#| label: download-hnl-data-2024
+#| include: true
+#| message: false
+#| cache: true
+# download all data for 2024. This takes a while
+measures_2024 <- get_council_measures(start_measure = 2024,
+                                        end_measure = 3162) %>%
+  filter(lubridate::year(event_date) == 2024)
+
+
+```
+
+
+## How many measures did each council member introduce?
+
+Council chair Waters introduced the most measures and most of those were resolutions introduced at the request of others. Among the measures not introduced by request, council chair Waters introduced the most resolutions and council member Dos Santos-Tam introduced the most bills. Council member Say introduced the fewest resolutions (and the fewest measures overall) and council members Tubla and Tupola each introduced the least number of bills.
+
+```{r}
+#| label: measures-introduced
+#| include: true
+#| message: false
+#| cache: false
+
+measures_2024 %>%
+  filter(event_type == "INTRO") %>%
+  select(measure_number,measure_type,
+         measure_introducer1,measure_introducer2,
+         introduced_by_request) %>%
+  pivot_longer(cols = measure_introducer1:measure_introducer2, 
+                 names_to = "delete", 
+                 values_to = "measure_introducer",
+                 values_drop_na = TRUE) %>%
+    select(-delete) %>%
+  mutate(measure_introducer = case_when(
+    measure_introducer == "TYLER DOS SANTOS-TAM" ~ "DOS SANTOS-TAM",
+    .default = stringr::word(measure_introducer,-1))) %>%
+    group_by(measure_type,
+             measure_introducer,
+             introduced_by_request) %>%
+    count() %>%
+    mutate(introduced_by_request = case_when(
+      introduced_by_request == "YES" ~ "By Request",
+      introduced_by_request == "NO" ~ "Not By Request"
+    )) %>%
+    ggplot(aes(y = reorder(measure_introducer,n), x = n, color = measure_type)) +
+    geom_linerange(aes(y = measure_introducer,xmin=0,  xmax = n),
+                   position = position_dodge(width = 0.5)) +
+    geom_point(position = position_dodge(width = 0.5)) +
+    facet_wrap(~introduced_by_request,scales = "free") + 
+    theme_clean() +
+    scale_color_okabe_ito(name = "") +
+    theme(
+      panel.grid.major.y = element_blank()) +
+    ylab("") +
+    xlab("") +
+    ggtitle("Number of Measures Introduced (2024)")
+
+
+```
+
+## Which council members introduced measures together?
+
+Measures in the Honolulu City Council can be introduced by either one or two council members. We can visualize how often each council member introduces measures with other members using the `cointro_network_graph()` function. Each line (or edge) represents a unique measure that was introduced by those two council members. 
+
+Overall, council member Dos Santos-Tam introduced measures with 7 other council members (all except with council member Tupola). On the other hand, council member Say overall only introduced measures with two other members. 
+
+We can also see patterns about who tended to work more often with whom. First there there is the highly colloborative group, especially for bills, that comprises council members Dos Santos-Tam, Weyer, and Cordero. The next group is centered on council chair Waters. Waters cointroduced several bills with member Weyer and several resolutions with member Kiaʻāina, but Kiaʻāina and Weyer did not work directly together at all. Council members Tupola and Tulba form another group and most frequently introduced measures with each other, but occassionally worked with other highly collaborative members like Dos Santos-Tam or Weyer. Council members Okimoto and Say introduced few measures overall, and when they did they worked with members of the highly collaborative group or with chair Waters. 
+
+```{r}
+#| label: cointroduced
+#| include: true
+#| message: false
+#| cache: false
+#| fig.width: 5
+
+# limit data to only measures introduced in 2024
+measures_introuced_2024 <- measures_2024 %>%
+  filter(event_type == "INTRO")
+
+# Plot network graph for all measures
+cointro_network_graph(measures_introuced_2024, type = "all")
+# Plot network graph for bills
+cointro_network_graph(measures_introuced_2024, type = "bill")
+# Plot network graph for resolutions
+cointro_network_graph(measures_introuced_2024, type = "resolution")
+  
+```
+
+## How often did council members miss votes?
+
+Council member Tupola missed the most votes (`r get_votes(measures_2024) %>% group_by(council_member, vote) %>%count() %>% pivot_wider(names_from = vote,values_from = n,values_fill = 0) %>% mutate(total = ABSENT + AYE + NO) %>%mutate(across(ABSENT:NO, ~ .x / total, .names = "perc_{.col}")) %>%select(-ABSENT:-NO, -total) %>%ungroup() %>%pivot_longer(cols = perc_ABSENT:perc_NO,names_to = "vote", values_to = "percent") %>% filter(vote == "perc_ABSENT")  %>% filter(council_member == "TUPOLA") %>% mutate(percent = scales::percent(percent,accuracy = 0.1)) %>% select(percent) %>% unlist %>% unname` missed), while council chair Waters missed the fewest (`r get_votes(measures_2024) %>% group_by(council_member, vote) %>%count() %>% pivot_wider(names_from = vote,values_from = n,values_fill = 0) %>% mutate(total = ABSENT + AYE + NO) %>%mutate(across(ABSENT:NO, ~ .x / total, .names = "perc_{.col}")) %>%select(-ABSENT:-NO, -total) %>%ungroup() %>%pivot_longer(cols = perc_ABSENT:perc_NO,names_to = "vote", values_to = "percent") %>% filter(vote == "perc_ABSENT")  %>% filter(council_member == "WATERS") %>% mutate(percent = scales::percent(percent,accuracy = 0.1)) %>% select(percent) %>% unlist %>% unname` missed).
+
+```{r}
+#| label: absentplot
+#| include: true
+#| message: false
+#| cache: false
+# extract the vote information from the measures
+votes_2024 <- get_votes(measures_2024)
+
+votes_2024 %>%
+    group_by(council_member, vote) %>%
+    count() %>%
+    pivot_wider(names_from = vote,
+                values_from = n,
+                values_fill = 0) %>%
+    mutate(total = ABSENT + AYE + NO) %>%
+    mutate(across(ABSENT:NO, ~ .x / total, .names = "perc_{.col}")) %>%
+    select(-ABSENT:-NO, -total) %>%
+    ungroup() %>%
+    pivot_longer(cols = perc_ABSENT:perc_NO,
+                 names_to = "vote",
+                 values_to = "percent") %>%
+  # remove temporary voting member
+    filter(council_member != "DOS SANTOS-TAM (temporary voting member)") %>%
+    filter(vote == "perc_ABSENT")  %>%
+    ggplot(aes(y = reorder(council_member,percent), x = percent)) +
+    geom_linerange(aes(y = council_member,xmin=0,  xmax = percent),
+                   position = position_dodge(width = 0.5)) +
+    geom_point(position = position_dodge(width = 0.5)) +
+    theme_clean() +
+    theme(
+      panel.grid.major.y = element_blank()) +
+    scale_x_continuous(labels = scales::percent, limits = c(0,0.3)) +
+    ggtitle("Percentage of Votes Absent (2024)") + 
+    xlab("") + 
+    ylab("")
+
+```
+
+## How many times did each committee meet?
+Unfortunately, we don't directly have the number of times a committee met in these data, but we do have data for when the committee had enough members present for a quorum and a vote took place, which should be a close proxy. The Budget and Planning & Economy committees, chaired by council members Cordero and Kiaʻāina respectively met most often with 13 meetings each. The Public Infrastructure and Technology committee, chaired by council member Tupola (who also missed the most number of votes overall), only met twice in 2024. 
+
+```{r}
+#| label: committees
+#| include: true
+#| message: false
+#| cache: false
+
+committes_2024 <- votes_2024 %>%
+  select(event_date, event_type) %>%
+  unique() %>%
+  filter(event_type != "CCL" & event_type != "CCL/PH" & event_type != "") %>%
+  group_by(event_type) %>%
+  count() %>%
+  ungroup() 
+
+committes_2024 %>%
+  ggplot(aes(y = reorder(event_type,n), x = n)) +
+  geom_linerange(aes(y = event_type,xmin=0,  xmax = n),
+                 position = position_dodge(width = 0.5)) +
+    geom_point(position = position_dodge(width = 0.5)) +
+  theme_clean() +
+  theme(panel.grid.major.y = element_blank()) +
+  ggtitle("Number of Committee Meetings (2024)") + 
+    xlab("") + 
+    ylab("")
+
+committee_info <- tibble(Chair = c("Kiaʻāina","Cordero","Say", "Weyer","Okimoto",
+                  "Dos Santos-Tam","Tubla","Dos Santos-Tam","Waters","Tupola"),
+       committee = c("P&E","BUD","ZON",
+                     "HSH","PS","EMLA","PESCA","TRANS","EM","PIT"),
+       name = c("Planning & Economy","Budget","Zoning","Housing, Sustainability & Health",
+                "Public Safety","Executive Matters and Legal Affairs","Parks, Enterprise Services, and Culture and the Arts","Transportation", "Executive Management","Public Infrastructure and Technology"))
+
+committes_2024 %>%
+  inner_join(committee_info, by = c("event_type" = "committee")) %>%
+  select(event_type,name,Chair,n) %>%
+  rename(`Committee Abbreviation` = event_type,
+         `Committee Name` = name,
+         `Number of Meetings` = n) %>%
+  datatable()
+
+```
+
+## Which measures did each council member vote no on?
+
+Determining what measures each city council member voted no on is not as easy as just displaying all the no votes. For example, a no vote could be against deferring/postponing a measure (which is a vote in favor of the measures) or against specific amendments, which might change the nature of the measure. A member could also vote no on a measure in a committee, but ultimately vote yes on the measure in a full council meeting. Because of this, we will only look at each member's most recent no vote on each measure and exclude votes for postponing. I also include the description of that no vote and how many total council members voted no for additional context.
+
+### Cordero
+Member Cordero voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "CORDERO") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: corderono
+#| include: true
+#| message: false
+#| cache: false
+
+# create function for table of no votes
+get_no_votes <- function(votes,name = "CORDERO"){
+  votes %>% 
+  group_by(measure_name,measure_number,measure_type,council_member) %>%
+  filter(str_detect(event_description,"Postpone") == FALSE) %>%
+  slice_max(event_date,n=1) %>%
+  filter(vote_no_n > 0) %>%
+  filter(vote == "NO") %>%
+  group_by(measure_name,measure_number,measure_type,council_member,event_description) %>%
+  count() %>%
+  arrange(measure_number) %>%
+  ungroup() %>%
+  group_by(measure_name,measure_number) %>%
+  mutate(n_members = row_number()) %>%
+  mutate(number_no_members = max(n_members)) %>%
+  filter(council_member == name) %>%
+  select(measure_number, measure_name,number_no_members,event_description) %>%
+  rename(`Measure Number`= measure_number,
+         `Measure Name`= measure_name,
+         `Total Number of Members to Vote No` = number_no_members,
+         `Vote Description` = event_description) %>%
+  kable()
+}
+get_no_votes(votes_2024, name = "CORDERO")
+```
+
+### Dos Santos-Tam
+Member Dos Santos-Tam voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "DOS SANTOS-TAM") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: dstno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "DOS SANTOS-TAM")
+
+```
+
+### Kiaʻāina
+Member Kiaʻāina voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "KIAʻĀINA") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: KIAʻĀINAno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "KIAʻĀINA")
+```
+
+### Okimoto
+Member Okimoto voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "OKIMOTO") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: OKIMOTOno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "OKIMOTO")
+```
+
+### Say
+Member Say voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "SAY") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: SAYno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "SAY")
+```
+
+### Tulba
+Member Tulba voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "TULBA") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: TULBAno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "TULBA")
+```
+
+### Tupola
+Member Tupola voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "TUPOLA") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: TUPOLAno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "TUPOLA")
+```
+
+### Waters
+Chair Waters voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "WATERS") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: WATERSno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "WATERS")
+```
+
+### Weyer
+Member Weyer voted no on `r votes_2024 %>% group_by(measure_name,measure_number,measure_type,council_member) %>% filter(str_detect(event_description,"Postpone") == FALSE) %>% slice_max(event_date,n=1) %>% filter(vote_no_n > 0) %>% filter(vote == "NO") %>% count() %>% arrange(measure_number) %>% ungroup() %>% filter(council_member == "WEYER") %>% nrow()` measures in 2024.
+
+```{r}
+#| label: WEYERno
+#| include: true
+#| message: false
+#| cache: false
+get_no_votes(votes_2024, name = "WEYER")
+```
