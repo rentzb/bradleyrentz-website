@@ -1,13 +1,13 @@
 ---
 title: "An Introduction to Bayesian Multi-Membership Models Using brms"
 date: 2025-04-28
-description: "A tutorial for using constructing multi-membership models with examples for education researchers."
+description: "A tutorial for constructing Bayesian multi-membership models in R with examples for education researchers."
 
-image: img/cointroduced-1.png
+image: figs/mmhlm.png
 twitter-card: 
-    image: "img/cointroduced-1.png"
+    image: "figs/mmhlm.png"
 open-graph: 
-    image: "img/cointroduced-1.png"
+    image: "figs/mmhlm.png"
 
 categories:
   - R
