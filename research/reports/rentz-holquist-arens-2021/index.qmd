@@ -1,0 +1,100 @@
+---
+title: "Using high school data to explore early college success on Pohnpei, Federated States of Micronesia"
+date: 2021-06-01
+author:
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Samantha E. Holquist
+    orcid: 0000-0002-6703-119X
+    affiliation: McREL International
+  - name: Chelsey L. Nardi
+    orcid: 0009-0008-4986-4658
+    affiliation: McREL International    
+  - name: Karen Simion
+    affiliation: College of Micronesia--FSM
+  - name: Pressler Martin
+    affiliation: Pohnpei Department of Education     
+  - name: Sheila A. Arens
+    orcid: 0009-0006-8827-4437
+    affiliation: McREL International
+ 
+categories:
+  - Federated States of Micronesia
+  - Pohnpei
+  - Pohnpei Department of Education
+  - College of Micronesia-FSM
+  - early college success
+  - secondary education
+  - postsecondary education
+  - Bayesian models
+  - regression analysis
+  - hierarchical linear models
+  - multiple imputation
+  - math
+  - reading
+  - writing
+  - placement test
+pub-info:
+  reference: >-
+    <a href="https://bradleyrentz.com/">Rentz, B.</a>, Holquist, S. E., Nardi, C. L., Simion, K., Martin, P., & Arens, S. A. (2021). <em>Using high school data to explore early college success on Pohnpei, Federated States of Micronesia  (REL 2021–092).</em> U.S. Department of Education, Institute of Education Sciences, National Center for Education Evaluation and Regional Assistance, Regional Educational Laboratory Pacific. <a href="https://files.eric.ed.gov/fulltext/ED613208.pdf">https://files.eric.ed.gov/fulltext/ED613208.pdf</a>
+  links:
+    - name: Main Report
+      url: https://files.eric.ed.gov/fulltext/ED613208.pdf
+      icon: fa-solid fa-scroll
+    - name: Study Brief (5-pages)
+      url: https://files.eric.ed.gov/fulltext/ED613212.pdf
+      icon: fa-solid fa-scroll  
+    - name: Study Snapshot (1-page)
+      url: https://files.eric.ed.gov/fulltext/ED613214.pdf
+      icon: fa-solid fa-scroll       
+    - name: Infographic
+      url: https://ies.ed.gov/sites/default/files/migrated/rel/infographics/pdf/REL_PA_Using_High_School_Data_to_Explore_Early_College_Success_on_Pohnpei.pdf
+      icon: fa-solid fa-chart-simple
+    - name: Technical Appendices
+      url: https://files.eric.ed.gov/fulltext/ED613211.pdf
+      icon: fa-solid fa-file-pdf
+
+---
+
+## Important links
+
+- [Main Report](https://files.eric.ed.gov/fulltext/ED613208.pdf)
+- [Study Brief (5-pages)](https://files.eric.ed.gov/fulltext/ED613212.pdf)
+- [Study Snapshot (1-page)](https://files.eric.ed.gov/fulltext/ED613214.pdf)
+- [Study Infographic](https://ies.ed.gov/sites/default/files/migrated/rel/infographics/pdf/REL_PA_Using_High_School_Data_to_Explore_Early_College_Success_on_Pohnpei.pdf)
+- [Technical Appendices](https://files.eric.ed.gov/fulltext/ED613211.pdf)
+
+
+## Abstract
+
+As of 2010, about 15 percent of residents older than age 25 on Pohnpei in the Federated States of Micronesia (FSM) had completed an associate degree or higher. To increase the number of college graduates, the Pohnpei Department of Education and the College of Micronesia--FSM are working together to improve the early college outcomes of their students. They noted that in 2018, 42 percent of applicants from Pohnpei to the College of Micronesia--FSM were not admitted or were admitted to a one-year nondegree certificate program. No studies have examined possible links between high school academic preparation in the FSM and early college success outcomes, such as the college entrance test result. Examining these links could inform strategies to improve degree attainment. Using data on Pohnpei public high school graduates from 2016 to 2018 provided by the Pohnpei Department of Education and the College of Micronesia--FSM, this study examined high school academic preparation characteristics and college student characteristics to determine whether they are associated with five early college success outcomes: College of Micronesia--FSM Entrance Test result; placement in credit-bearing math, reading, and writing courses; and persistence to a second year. The study found that high school grade point average was positively associated with all five outcomes. Students who were enrolled in the high school academic coursework track were more likely than students who were enrolled in the business and vocational tracks to be admitted to a degree program and to enroll in credit-bearing reading courses. College students who first enrolled at the College of Micronesia--FSM in the summer term immediately after high school graduation were more likely to persist to a second year than those who first enrolled in the fall term.
+
+## Important figures
+
+![Figure 2. High school grade point average was positively associated with results on the College of Micronesia–
+FSM Entrance Test, spring 2016–spring 2018](fig1.png)
+
+![Figure 4. More College of Micronesia–FSM students were placed in credit-bearing math courses than in
+credit-bearing reading or writing courses](fig2.png)
+
+![Figure 5. High school grade point average was positively associated with College of Micronesia–FSM students’
+placement in credit-bearing courses in all three subjects](fig3.png)
+
+![Figure 7. High school grade point average was positively associated with College of Micronesia–FSM students’
+persistence to a second year](fig4.png)
+
+
+
+## Citation
+
+```bibtex
+@techreport{Rentz:2021a,
+    title = {Using high school data to explore early college success on {Pohnpei, Federated States of Micronesia}},
+    author = {Bradley Rentz and Samantha E. Holquist and Chelsey L. Nardi and Karen Simion and Pressler Martin and Sheila A. Arens},
+    url = {https://files.eric.ed.gov/fulltext/ED613208.pdf},
+    institution = {U.S. Department of Education, Institute of Education Sciences, National Center for Education Evaluation and Regional Assistance, Regional Educational Laboratory Pacific},
+    year = {2021}
+  }
+```

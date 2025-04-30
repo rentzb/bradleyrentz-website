@@ -1,0 +1,54 @@
+---
+title: "Examining the English Language Arts Placement System at the College of the Marshall Islands"
+date: 2025-5-01
+author:
+  - name: Lisa Shannon
+    orcid: 0009-0006-4463-1463
+    affiliation: Magnolia Consulting
+  - name: Jennifer Gruber
+    affiliation: Magnolia Consulting
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Cheryl Vila
+    affiliation: College of the Marshall Islands
+    orcid: 0009-0002-1481-5852
+  - name: Kristen Erichsen
+    orcid: 0000-0002-6025-2387
+    affiliation: McREL International
+  - name: Jess A. Nastasi
+    orcid: 0000-0002-7119-3394
+    affiliation: McREL International
+categories:
+  - Republic of the Marshall Islands
+  - College of the Marshall Islands
+  - postsecondary English language arts course placement
+  - placement test
+  - postsecondary education
+  - item response theory
+  - bifactor IRT
+  - regression analysis
+  - English language arts
+pub-info:
+  reference: >-
+    Shannon, L., Gruber, J., <a href="https://bradleyrentz.com/">Rentz, B.</a>, Vila, C., Erichsen, K., & Nastasi, J. (In Press). <em>Examining the English Language Arts Placement System at the College of the Marshall Islands.</em> McREL International. 
+ 
+---
+
+
+## Abstract
+
+The College of the Marshall Islands (CMI) places many students into developmental English language arts (ELA) courses, which research suggests decreases their likelihood of academic success and persistence to graduation compared with students in credit-bearing courses (Jaggars & Stacey, 2014). To address this, CMI made systemic changes to its course placement processes before the 2020/21 academic year in an effort to increase the number of students who place into and pass credit-bearing ELA courses, increase the number of students who graduate, and improve the accuracy of its course placement system. As a result of these changes, students take a revised ELA placement test—which includes multiple-choice and writing components. Additionally, CMI now takes into account both high school grade point average (GPA) and placement test scores when placing students into developmental or credit-bearing courses and regular versus intensive pathways. The goals of this study were to evaluate the relationship between the new ELA placement process and student outcomes and examine how well CMI’s revised ELA placement test measures ELA performance. The study examined ELA course placement, course passing, and college persistence rates among first-year students enrolling at CMI between spring 2022 and spring 2024, after the college implemented these systemic changes. It also evaluated the relationship between CMI’s new placement procedures and placement in credit-bearing ELA courses. Findings showed that 11 percent of students who started at CMI in the 2020/21 academic year placed directly into credit-bearing ELA courses. Students placed in intensive pathways of credit-bearing and higher-level developmental courses had the highest passing rates for credit-bearing courses. Additionally, students placed into intensive pathways had the highest rates of college persistence, regardless of course level. Thus, CMI could explore expanding access to intensive pathways of credit-bearing and higher-level developmental courses and review course structure and alignment across levels and pathways. CMI might also consider providing additional supports to students placed in lower-level developmental courses. This study also found that the multiple-choice component of CMI’s revised ELA placement test effectively measured ELA performance, particularly for lower-performing students. However, CMI might consider revising weaker test items and reducing the number of questions to reduce the testing burden on students. Additionally, since the multiple-choice component of the placement test and high school GPA similarly predicted passing credit-bearing ELA courses, CMI could reassess how each measure is weighted in placement decisions and consider weighting high school GPA more heavily to ensure appropriate course placement.
+
+
+## Citation
+
+```bibtex
+@techreport{Shannon:2024,
+    title = {Examining the {English} Language Arts Placement System at the {College of the Marshall Islands}},
+    author = {Lisa Shannon and Jennifer Gruber and Bradley Rentz and Cheryl Vila and Kristen Erichsen and Jess Nastasi},
+    institution = {McREL International},
+    year = {2025}
+  }
+```

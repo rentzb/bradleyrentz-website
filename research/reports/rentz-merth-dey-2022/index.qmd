@@ -1,0 +1,56 @@
+---
+title: "Literacy Footprints Guided Reading System Effects on Grade 3 English Language Arts Assessment Performance"
+date: 2022-11-01
+author:
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Robert Merth
+    affiliation: McREL International
+    orcid: 0000-0002-3534-4335
+  - name: Darienne Dey
+    affiliation: McREL International
+
+categories:
+  - Florida
+  - Literacy Footprints Guided Reading System
+  - literacy
+  - elementary education
+  - RCT
+  - matched-pair cluster RCT
+  - design-based estimator
+  - BART
+pub-info:
+  reference: >-
+    <a href="https://bradleyrentz.com/">Rentz, B.</a>, Merth, R., Dey, D., Jones, L.M., & Arens, S.A. (2022). <em>Literacy Footprints Guided Reading System Effects on Grade 3 English Language Arts Assessment Performance.</em> McREL International <a href="https://files.eric.ed.gov/fulltext/ED623892.pdf">https://files.eric.ed.gov/fulltext/ED623892.pdf</a>
+  links:
+    - name: Report
+      url: https://files.eric.ed.gov/fulltext/ED623892.pdf
+      icon: fa-solid fa-scroll
+
+
+---
+
+## Important links
+
+- [Report](https://files.eric.ed.gov/fulltext/ED623892.pdf)
+
+
+## Abstract
+
+Pioneer Valley Books (PVB) contracted McREL International to investigate the effects of the third grade Literacy Footprints (LFP) guided reading system on English language arts (ELA) performance on state assessments. LFP is a research-based, comprehensive, small-group literacy tool that facilitates explicit and systematic guided reading instruction to students in grades K--6. McREL researchers conducted a matched pair cluster randomized control trial to investigate LFP's possible effects on student achievement. The trial, conducted during the 2021/22 school year, included a sample of 3,071 students in 29 public elementary schools in a large suburban Florida school district. The district purchased LFP kits for grade 3 teachers in 14 elementary schools (SY2021/22) that were randomly assigned to the treatment group. Treatment teachers also obtained access to the Digital Reader and received virtual training and follow-up support to implement materials with students. Business-as-usual (BAU) instruction occurred at 15 schools (the control group). After the trial was completed, control group schools received the kits in the 2022/23 school year with access to the Digital Reader. Using a design-based estimator that accounts for both school-level clustering and school-matched pairs, the study found a statistically significant difference in the average English language arts standardized tests scores between treatment and control groups. By the end of the study, the treatment group students on average earned a 4.31-point higher scale score than the control group students. Results showed that, despite implementation challenges and limitations, students who received the treatment outperformed their control group peers on the Florida Statewide Assessment in English language arts. However, although statistically significant, the effect size (Hedges' g = 0.19) is small. This study showed promising evidence for the LFP guided reading system. Further research is needed to examine the generalizability of these results across different school districts and contexts and under more favorable conditions (e.g., without frequent COVID disruptions).
+
+
+
+## Citation
+
+```bibtex
+@techreport{Rentz:2024,
+    title = {{Literacy Footprints Guided Reading System} Effects on Grade 3 {English} Language Arts Assessment Performance},
+    author = {Bradley Rentz and Robert Merth and Darienne Dey},
+    url = {https://files.eric.ed.gov/fulltext/ED623892.pdf},
+    institution = {McREL International},
+    year = {2022}
+  }
+```

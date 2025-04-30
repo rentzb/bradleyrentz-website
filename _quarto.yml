@@ -52,6 +52,8 @@ website:
         href: "index.qmd"
       - text: "Blog"
         href: "blog/index.qmd"
+      - text: "Research"
+        href: "research/index.qmd"        
       
     right:
       - text: "{{< iconify bi rss size=1.1em title='RSS' >}}"

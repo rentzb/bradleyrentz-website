@@ -1,0 +1,83 @@
+---
+title: "Legends of Learning: Math Basecamp Use and Math Achievement in Rialto Unified School District"
+date: 2024-5-01
+author:
+  - name: Kristen Erichsen
+    orcid: 0000-0002-6025-2387
+    affiliation: McREL International
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Matt Linick
+    affiliation: McREL International
+    orcid: 0000-0003-1306-8111
+  - name: Sheila A. Arens
+    orcid: 0009-0006-8827-4437
+    affiliation: McREL International
+
+categories:
+  - California
+  - Legends of Learning Math Basecamp
+  - math
+  - elementary education
+  - regression analysis
+  - propensity score matching
+pub-info:
+  reference: >-
+    Erichsen, E., <a href="https://bradleyrentz.com/">Rentz, B.</a>, Linick, M., & Arens, S.A. (2024). <em>Legends of Learning: Math Basecamp Use and Math Achievement in Rialto Unified School District</em> McREL International <a href="https://files.eric.ed.gov/fulltext/ED656319.pdf">https://files.eric.ed.gov/fulltext/ED656319.pdf</a>
+  links:
+    - name: Report
+      url: https://files.eric.ed.gov/fulltext/ED656319.pdf
+      icon: fa-solid fa-scroll
+
+
+---
+
+## Important links
+
+- [Report](https://files.eric.ed.gov/fulltext/ED656319.pdf)
+
+
+
+## Executive Summary
+
+As the number of sessions of Legends of Learning’s Math Basecamp increases, achievement on California’s Smarter Balanced Mathematics assessment increases significantly. 
+
+Completing at least 24 sessions of Legends of Learning’s Math Basecamp significantly increases student scores on California’s Smarter Balanced Mathematics assessment. 
+
+Cohen’s D computed for these relationships indicate a medium, significant effect of Math Basecamp on math achievement.
+
+
+Legends of Learning designs game-based learning programs for teachers, students, and families that are intended to align with school curricula and that leverage fun student activities intended to foster deeper engagement and understanding of the material. Math Basecamp, specifically, was designed to facilitate students’ development of mathematics fluency, including counting, deriving, mastery, and
+application of mathematical concepts.
+
+McREL International conducted a study of how variation in student use of Math Basecamp in the 2022–2023 school year related to student math achievement on the Smarter Balanced Assessment in Mathematics, in Rialto Unified School District in California. A total of 3,273 third, fourth, and fifth grade students were included in the analytic sample of this report. Approximately 50% of students in the sample were female. Half of the students were in fourth grade, 24.4% were in third grade, and 25.6% were in fifth grade. We used Ordinary Least Squares (OLS)
+regression to examine the association between Math Basecamp use and math
+achievement. This allowed us to account for variables including student gender,
+special education status, race, grade level, English language proficiency, attendance, and prior performance on the state math
+assessment (Johnson & Wichern 2023). Next, we used propensity score matching to estimate the average treatment effect of completing the developer’s suggested number of sessions in Math Basecamp (Rosenbaum & Rubin 1983; Raudenbush & Bryk 2002).
+
+OLS results indicated that as the number of completed sessions increases, math achievement scores also increase significantly.
+Propensity-score matching results indicated that compared to students with zero sessions, completing the recommended number of sessions significantly increases students’ math achievement scores (see Figure 1). 
+
+
+## Important figures
+
+![Figure 1. Predicted Percentile of Standardized Student Performance on
+Smarter Balanced Math Assessments by Treatment Group](fig1.png)
+
+
+
+
+## Citation
+
+```bibtex
+@techreport{Erichsen:2024,
+    title = {{Legends of Learning}: Math Basecamp Use and Math Achievement in {Rialto Unified School District}},
+    author = {Kristen Erichsen and Bradley Rentz and Matt Linick and Sheila A. Arens},
+    url = {https://files.eric.ed.gov/fulltext/ED656319.pdf},
+    institution = {McREL International},
+    year = {2024}
+  }
+```

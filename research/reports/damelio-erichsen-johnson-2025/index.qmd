@@ -1,0 +1,49 @@
+---
+title: "Understanding the use of an early warning system to support tier 2 literacy interventions in the Commonwealth of the Northern Mariana Islands Public School System"
+date: 2025-5-31
+author:
+  - name: Erin D'Amelio
+    orcid: 0009-0003-1800-1757 
+    affiliation: McREL International
+  - name: Kristen Erichsen
+    orcid: 0000-0002-6025-2387 
+    affiliation: McREL International  
+  - name: Haley E. Johnson
+    orcid: 0000-0001-7522-5552 
+    affiliation: McREL International
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Dylan Kriescher
+    orcid: 0000-0002-7737-6159 
+    affiliation: McREL International
+  - name: Jess Nastasi
+    affiliation: McREL International
+    orcid: 0000-0002-7119-3394 
+categories:
+  - CNMI
+  - early warning system
+  - tier 2 interventions
+  - literacy
+  - elementary education
+  - mixed methods
+pub-info:
+  reference: >-
+    D’Amelio, E., Erichsen, K., Johnson, H. E., <a href="https://bradleyrentz.com/">Rentz, B.</a>, , Kriescher, D., & Nastasi, J. (Under Review). <em>Understanding the use of an early warning system to support tier 2 literacy interventions in the Commonwealth of the Northern Mariana Islands Public School System.</em> McREL International.
+---
+
+## Abstract
+
+In the 2020/21 and 2021/22 school years, the Commonwealth of the Northern Mariana Islands (CNMI) Public School System (PSS) piloted an early warning system (EWS) across two cohorts of elementary schools as a part of their developing multi-tiered system of supports (MTSS) framework to improve data-driven decisionmaking around reading instruction and intervention for elementary students. The current study examined survey and interview data regarding the reported implementation of the EWS process to support the use of Tier 2 literacy interventions to provide more intensive academic support for students at risk of not meeting reading benchmarks across pilot cohorts. Quantitative findings indicated that cohorts reported similar implementation across aspects of the EWS process, including knowledge about the EWS, frequency of EWS meetings, reviewing student and intervention-level data, and monitoring student progress. Cohorts differed across other aspects of reported EWS implementation, including how teams examined student data, teams’ use of the EWS tool, and their reflections on the EWS process. Qualitative findings showed that EWS teams report using additional meetings to discuss intervention decisions and that interpreting existing data can be an overwhelming task for school staff. Both cohorts also reported that Tier 2 interventions took place both within and outside the instructional day and included tutoring. Together, quantitative and qualitative findings suggested that schools generally used the EWS process to support Tier 2 reading instruction and intervention similarly, despite differences between cohorts. Potential challenges to data use and alignment across assessments and curricula may contribute to inconsistent EWS implementation.
+
+## Citation
+
+```bibtex
+@techreport{DAmelio:2025,
+    title = {Understanding the use of an early warning system to support tier 2 literacy interventions in the {Commonwealth of the Northern Mariana Islands Public School System}},
+    author = {Erin D'Amelio and Kristen Erichsen and Haley E. Johnson and Bradley Rentz and Dylan Kriescher and Jess Nastasi},
+    institution = {McREL International},
+    year = {2025}
+  }
+```

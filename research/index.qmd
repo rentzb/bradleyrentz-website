@@ -1,0 +1,34 @@
+---
+title: "Research"
+listing:
+  - id: articles
+    contents: "articles/*/index.qmd"
+    sort: "date desc"
+    template: ../html/research/listing.ejs
+    categories: true
+  - id: reports
+    contents: "reports/*/index.qmd"
+    sort: "date desc"
+    template: ../html/research/listing.ejs
+page-layout: full
+include-back-link: false
+toc-location: right
+---
+
+My research focuses mostly on applied education topics---such as college and career readiness, teacher preparation, post-secondary course placement---and linguistics. Most of my research has been in the Pacific region.
+
+{{< ai blank-just-to-add-ai-dependency-to-this-page >}}
+
+
+
+## Peer-Reviewed Reports
+
+:::{#reports}
+:::
+
+
+## Journal Articles
+
+:::{#articles}
+:::
+
