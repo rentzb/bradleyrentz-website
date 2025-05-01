@@ -1,0 +1,86 @@
+---
+title: "Supernova 2009gj in NGC 134"
+date: 2009-07-01
+author:
+  - name: Chistopher J. Stockdale
+    url: https://www.marquette.edu/physics/directory/christopher-stockdale.php
+    orcid: 0000-0002-2893-6105
+    affiliation: Marquette University
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: Marquette University
+  - name: Cyrus M. Vandrevala
+    url: https://cyrusvandrevala.com/about/
+    affiliation: Marquette University
+  - name: Kurt W. Weiler
+    affiliation: Naval Research Laboratory
+  - name: Stefan Immler
+    url: https://science.nasa.gov/astrophysics/astrophysics-organization-and-staff/staff-bios/dr-stefan-immler/
+    affiliation: NASA Goddard Space Flight Center
+  - name: Schuyler D. Van Dyk
+    url: https://web.ipac.caltech.edu/staff/vandyk/
+    orcid: 0000-0001-9038-9950
+    affiliation: California Institute of Technology
+  - name: Nino Panagia
+    affiliation: Space Telescope Science Institute  
+  - name: Jon Marcaide
+    url: https://www.uv.es/marcaide/
+    orcid: 0000-0002-2736-9794
+    affiliation: University of Valencia  
+  - name: David Pooley
+    url: https://www.trinity.edu/directory/dpooley
+    orcid: 0000-0003-4897-7833
+    affiliation: University of Wisconsin at Madison 
+  - name: Richard A. Sramek
+    affiliation: National Radio Astronomy Observatory
+  - name: Stuart Ryder
+    url: https://researchers.mq.edu.au/en/persons/stuart-ryder
+    orcid: 0000-0003-4501-8100
+    affiliation: Anglo-Australian Observatory
+
+ 
+categories:
+  - supernova
+  - astrophysics
+
+
+  
+pub-info:
+  reference: >-
+    Stockdale, C. J., <a href="https://bradleyrentz.com/">Rentz, B.,</a> Vandrevala, C. M., Weiler, K. W., Immler, S., van Dyk, S. D., Panagia, N., Marcaide, J. M., Pooley, D., Sramek, R. A., & Ryder, S. (2009). Supernova 2009gj in NGC 134.  <em>International Astronomical Union Circular</em>, 9056. <a href="https://ui.adsabs.harvard.edu/abs/2009IAUC.9056....1S">https://ui.adsabs.harvard.edu/abs/2009IAUC.9056....1S</a>
+  links:
+    - name: Article
+      url: https://ui.adsabs.harvard.edu/abs/2009IAUC.9056....1S
+      icon: fa-solid fa-scroll
+
+ 
+
+---
+
+## Important links
+
+- [Article](https://ui.adsabs.harvard.edu/abs/2009IAUC.9056....1S)
+
+
+
+
+## Abstract
+
+[We] report the detection of radio emission near the position of the type-IIb supernova 2009gj (cf. CBETs 1856, 1858) with the Very Large Array radio telescope. Flux density measurements were made at 8.46 GHz (3.5 cm) of 0.33 +/- 0.04 mJy on June 27.43 UT, 0.59 +/- 0.04 mJy on July 2.56, and 1.02 +/- 0.04 on July 11.51. The measured position of the radio emission of R.A. = 0h30m28s.54, Decl. = -33o12'56".2 (equinox 2000.0) is in good agreement with the measured optical position end figures 28s.56, 56".0 (CBET 1856). The following 3-sigma upper limits were measured: at 22.46 GHz (1.3 cm), 1.9 mJy on June 28.45 and 1.5 mJy on July 5.51; at 4.86 GHz (6.0 cm), 0.19 mJy on June 29.44 and 0.38 mJy on July 2.60; and at 1.43 GHz (20 cm), 2.32 mJy on July 2.64. The radio emission has likely been caught on the rise at 3.6 cm. If the object behaves like other known type-IIb supernovae, it should soon start increasing rapidly at longer radio wavelengths. Further study in all wavelength bands, especially radio and x-ray, is warranted. Radio observations at the Very Large Array are continuing.
+
+
+## Citation
+
+
+
+```bibtex
+@article{Stockdale-2009,
+    title = {Supernova 2009gj in {NGC} 134},
+    author = {Christopher Stockdale and Bradley Rentz and Cyrus M. Vandrevala and Kurt W. Weiler and Stefan Immler and Schuyler D. Van Dyk and Nino Panagia and Jon Marcaide and David Pooley and Richard A. Sramek and Stuart Ryder},
+    journal = {International Astronomical Union Circular},
+    volume = {9056},
+    url = {https://ui.adsabs.harvard.edu/abs/2009IAUC.9056....1S},
+    year = {2009}
+  }
+```

@@ -10,6 +10,10 @@ listing:
     contents: "reports/*/index.qmd"
     sort: "date desc"
     template: ../html/research/listing.ejs
+  - id: dissertation
+    contents: "dissertation/*/index.qmd"
+    sort: "date desc"
+    template: ../html/research/listing.ejs    
 page-layout: full
 include-back-link: false
 toc-location: right
@@ -30,5 +34,10 @@ My research focuses mostly on applied education topics---such as college and car
 ## Journal Articles
 
 :::{#articles}
+:::
+
+## Dissertation
+
+:::{#dissertation}
 :::
 

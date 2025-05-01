@@ -1,0 +1,68 @@
+---
+title: "Topological Relations in Pohnpeian"
+date: 2017-08-01
+author:
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: University of Hawai‘i at Mānoa
+
+ 
+categories:
+  - Pohnpei
+  - Federated States of Micronesia
+  - topological relations
+  - Pohnpeian language
+  - evolutionary classification trees
+
+  
+pub-info:
+  reference: >-
+    <a href="https://bradleyrentz.com/">Rentz, B.</a> (2017). Topological Relations in Pohnpeian. <em>Linguistics Vanguard</em>, 3(1), 20160092. <a href="https://doi.org/10.1515/lingvan-2016-0092">https://doi.org/10.1515/lingvan-2016-0092</a>
+  links:
+    - name: Article Full Text
+      url: http://hdl.handle.net/10125/63283
+      icon: fa-solid fa-scroll
+    - name: Code and Data
+      url: https://github.com/rentzb/topological_relations_pohnpeian
+      icon: fa-brands fa-github
+ 
+
+---
+
+## Important links
+
+- [Article](http://hdl.handle.net/10125/63283)
+- [Code and Data](https://github.com/rentzb/topological_relations_pohnpeian)
+
+
+
+## Abstract
+
+This article explores a more nuanced understanding of topological relations in the Pohnpeian language (Austronesian). The BowPed Toolkit (Bowerman and Pederson 1992. Topological relations picture series. In Space stimuli kit 1.2: November 1992, 51, Nijmegen: Max Planck Institute for Psycholinguistics. http://fieldmanuals. mpi.nl/volumes/1992/bowped/.) is employed as an elicitation tool with five Pohnpeian speakers. Evolutionary classification tree modeling is used as a discovery tool to find patterns in the data. The results show that the two prepositions in Pohnpeian, nan and ni, should be redefined in terms of topological relations as ‘containment’ and ‘attachment’ respectively. Likewise the meaning of some prepositional nouns are further revised.
+
+## Important figures
+
+![Figure 16. Overlapping uses of nan, ni, pohn, and pahn.](fig1.png)
+
+
+
+
+## Citation
+
+<p class="buttons" style="text-align:center;">
+<a class="btn btn-danger" target="_blank" href="https://www.zotero.org/save?type=doi&q=10.1515/lingvan-2016-0092">{{< ai zotero >}}&emsp;Add to Zotero {{< fa square-arrow-up-right >}}</a>
+</p>
+
+```bibtex
+@article{Rentz-2017,
+    title = {Topological Relations in {Pohnpeian}},
+    author = {Bradley Rentz},
+    journal = {Linguistics Vanguard},
+    volume = {3},
+    issue = {1},
+    pages = {20160092},
+    doi = {10.1515/lingvan-2016-0092},
+    year = {2017}
+  }
+```

@@ -1,0 +1,53 @@
+---
+title: "Research matters: Let’s think about this."
+date: 2020-1-01
+author:
+  - name: Bryan Goodwin
+    affiliation: McREL International
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+
+ 
+categories:
+  - English learners
+
+
+  
+pub-info:
+  reference: >-
+    Goodwin, B. & <a href="https://bradleyrentz.com/">Rentz, B.</a> (2020). Research Matters: Let's Think About This. <em>Education Leadership</em>, 77(4), 82--83 <a href="https://www.ascd.org/el/articles/lets-think-about-this">https://www.ascd.org/el/articles/lets-think-about-this</a>
+  links:
+    - name: Article
+      url: https://www.ascd.org/el/articles/lets-think-about-this
+      icon: fa-solid fa-scroll
+ 
+
+---
+
+## Important links
+
+- [Article](https://www.ascd.org/el/articles/lets-think-about-this)
+
+
+
+
+
+
+## Citation
+
+
+
+```bibtex
+@article{Goodwin-2020,
+    title = {Research matters: Let’s think about this.},
+    author = {Bryan Goodwin and Bradley Rentz},
+    journal = {Education Leadership},
+    volume = {77},
+    issue = {4},
+    pages = {82--83},
+    url = {https://www.ascd.org/el/articles/lets-think-about-this},
+    year = {2020}
+  }
+```

@@ -1,0 +1,97 @@
+---
+title: "Using High School Data to Predict College Readiness and Early College Success on Guåhan (Guam)"
+date: 2021-04-01
+author:
+  - name: Lisa Shannon
+    orcid: 0009-0006-4463-1463
+    affiliation: Magnolia Consulting
+  - name: Anne Cosby
+    affiliation: Magnolia Consulting    
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Molly Henschel
+    affiliation: Magnolia Consulting
+  - name: Sheila A. Arens
+    orcid: 0009-0006-8827-4437
+    affiliation: McREL International
+  - name: Samantha E. Holquist
+    orcid: 0000-0002-6703-119X
+ 
+categories:
+  - Guam
+  - Guam Public School System
+  - University of Guam
+  - Guam Community College
+  - early college success
+  - secondary education
+  - postsecondary education
+  - regression analysis
+  - math
+  - reading
+  - multiple imputation
+  
+pub-info:
+  reference: >-
+    Shannon, L., Cosby, A., <a href="https://bradleyrentz.com/">Rentz, B.</a>, Henschel, M., Arens, S.A., & Holquist, S.E. (2021). <em>Using High School Data to Predict College Readiness and Early College Success on Guåhan (Guam) (REL 2021–073).</em> U.S. Department of Education, Institute of Education Sciences, National Center for Education Evaluation and Regional Assistance, Regional Educational Laboratory Pacific. <a href="https://files.eric.ed.gov/fulltext/ED611775.pdf">https://files.eric.ed.gov/fulltext/ED611775.pdf</a>
+  links:
+    - name: Main Report
+      url: https://files.eric.ed.gov/fulltext/ED611775.pdf
+      icon: fa-solid fa-scroll
+    - name: Study Brief (5-pages)
+      url: https://files.eric.ed.gov/fulltext/ED611778.pdf
+      icon: fa-solid fa-scroll  
+    - name: Study Snapshot (1-page)
+      url: https://files.eric.ed.gov/fulltext/ED611779.pdf
+      icon: fa-solid fa-scroll       
+    - name: Infographic
+      url: https://ies.ed.gov/sites/default/files/migrated/rel/infographics/pdf/REL_PA_Using_High_School_Data_to_Predict_College_Readiness_and_Early_College_Success_on_Guam.pdf
+      icon: fa-solid fa-chart-simple
+    - name: Technical Appendices
+      url: https://files.eric.ed.gov/fulltext/ED611777.pdf
+      icon: fa-solid fa-file-pdf
+
+---
+
+## Important links
+
+- [Main Report](https://files.eric.ed.gov/fulltext/ED611775.pdf)
+- [Study Brief (5-pages)](https://files.eric.ed.gov/fulltext/ED611778.pdf)
+- [Study Snapshot (1-page)](https://files.eric.ed.gov/fulltext/ED611779.pdf)
+- [Study Infographic](https://ies.ed.gov/sites/default/files/migrated/rel/infographics/pdf/REL_PA_Using_High_School_Data_to_Predict_College_Readiness_and_Early_College_Success_on_Guam.pdf)
+- [Technical Appendices](https://files.eric.ed.gov/fulltext/ED611777.pdf)
+
+
+## Abstract
+
+On Guåhan (Guam), the large percentages of students enrolling in non-credit-bearing courses at Kulehon Kumunidåt Guåhan (Guam Community College) and Unibetsedåt Guåhan (University of Guam) have raised concerns about college readiness and early college success. Without adequate research on predictors of
+college readiness and early success among students on Guåhan, educators and other stakeholders find it difficult to identify and support students at risk of being underprepared for college. This study examined which student characteristics predicted college readiness and early college success among students who
+graduated from Guåhan high schools and enrolled at Kulehon Kumunidåt Guåhan or Unibetsedåt Guåhan between 2012 and 2015. Students’ college readiness and early college success were assessed using three indicators: enrolling in only credit-bearing math and English courses during the first year of college,
+earning all credits attempted during the first semester of college, and persisting to a second year of college. About 23 percent of students met all three indicators and were thus classified as demonstrating college readiness and early college success. The percentages of students who met each individual
+indicator varied: 30 percent enrolled in only credit-bearing math and English courses, 43 percent earned all the credits they attempted, and 74 percent persisted to a second year. Various student characteristics predicted meeting all three indicators and each individual indicator. Graduates of John F. Kennedy High
+School and male students were the most likely to meet all three indicators and were the most likely to enroll in only credit-bearing math and English courses. Completing a high-level math course during high school positively predicted meeting the composite indicator of college readiness and early college success
+and of enrolling in only credit-bearing math and English courses and earning all credits attempted. A higher cumulative high school grade point average also positively predicted meeting all three indicators and each individual indicator. Kulehon Kumunidåt Guåhan enrollees were more likely than Unibetsedåt Guåhan enrollees to earn all credits attempted during their first semester. 
+
+## Important figures
+
+![Figure 1. About 23 percent of Guåhan public high schools who enrolled in Kulehon Kumunidåt Guåhan or Unibetsedåt Guåhan between fall 2012 and fall 2015 met the composite indicator of college readiness and early college success, and the percentages who met each individual indicator varied](fig1.png)
+
+![Figure 3. Male graduates of Guåhan public high schools who enrolled in Kulehon Kumunidåt Guåhan or Unibetsedåt Guåhan between fall 2012 and fall 2015 had a higher probability of meeting the composite indicator of college readiness and early college success and of enrolling in only credit-bearing math and English courses during their first year in college than female graduates did](fig2.png)
+
+![Figure 4. Graduates of Guåhan public high schools who completed a high-level math course during high school and enrolled in Kulehon Kumunidåt Guåhan or Unibetsedåt Guåhan between fall 2012 and fall 2015 had a higher probability of meeting the composite indicator of college readiness and early college success, of enrolling in only credit-bearing math and English courses during their first year of college, and of earning all credits attempted during their first semester of college](fig3.png)
+
+![Figure 5. Graduates of Guåhan public high schools who had higher cumulative high school grade point averages and enrolled in Kulehon Kumunidåt Guåhan or Unibetsedåt Guåhan between fall 2012 and fall 2015 had a higher probability of meeting the composite indicator and each individual indicator of college readiness and early college success than did students with lower grade point averages](fig4.png)
+
+
+## Citation
+
+```bibtex
+@techreport{Shannon:2021b,
+    title = {Using High School Data to Predict College Readiness and Early College Success on {Guåhan (Guam)}},
+    author = {Lisa Shannon and Anne Cosby and Bradley Rentz and Molly Henschel and Sheila A. Arens  and Samantha E. Holquist},
+    url = {https://files.eric.ed.gov/fulltext/ED611775.pdf},
+    institution = {U.S. Department of Education, Institute of Education Sciences, National Center for Education Evaluation and Regional Assistance, Regional Educational Laboratory Pacific},
+    year = {2021}
+  }
+```

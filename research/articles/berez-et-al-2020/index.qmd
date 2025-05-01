@@ -1,0 +1,74 @@
+---
+title: "Supporting small languages together: The history and impact of the International Conference on Language Documentation & Conservation series"
+date: 2020-10-01
+author:
+  - name: Andrea Berez-Kroeker
+    orcid: 0000-0001-8782-515X
+    url: https://www.andreaberezkroeker.com/
+    affiliation: University of Hawai‘i at Mānoa
+  - name: Noella Handley
+    affiliation: University of Hawai‘i at Mānoa    
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: University of Hawai‘i at Mānoa
+  - name: Jim Yoshioka
+    affiliation: University of Hawai‘i at Mānoa
+    orcid: 0000-0002-8145-4164
+  - name: Victoria Anderson
+    affiliation: University of Hawai‘i at Mānoa
+  - name: Bradley McDonnell
+    url: https://www.bradleymcdonnell.com/
+    affiliation: University of Hawai‘i at Mānoa
+    orcid: 0000-0001-6422-2022
+ 
+categories:
+  - language documentation
+  - conferences
+
+  
+pub-info:
+  reference: >-
+    <a href="https://www.andreaberezkroeker.com/">Berez-Kroeker, A.</a>, Handley, N., <a href="https://bradleyrentz.com/">Rentz, B.</a>, Yoshioka, J., Anderson, V, & <a href="https://www.bradleymcdonnell.com/">McDonnell, B.</a> (2020). Supporting small languages together: The history and impact of the International Conference on Language Documentation & Conservation series. <em>Language Documentation & Conservation</em>, 14, 642–666. <a href="http://hdl.handle.net/10125/24966">http://hdl.handle.net/10125/24966</a>
+  links:
+    - name: Article
+      url: http://hdl.handle.net/10125/24966
+      icon: fa-solid fa-scroll
+ 
+
+---
+
+## Important links
+
+- [Article](http://hdl.handle.net/10125/24966)
+
+
+
+## Abstract
+
+The International Conference on Language Documentation & Conservation series, or ICLDC, has, since its inception in 2009, become the flagship conference for the field of language documentation. Every two years, conference attendees gather at the University of Hawai‘i at Mānoa to share their experiences working on diverse topics related to the preservation of underrepresented languages worldwide. Attendees come from a range of backgrounds: Indigenous language communities, language activism organizations, K–12 school systems, as well as students and faculty from colleges and universities. They represent dozens of countries and hundreds of languages, and they have one goal in mind: supporting small languages together. In this paper, we trace the history of the ICLDC series since the first iteration and discuss the scope of its impact on the field of language documentation and conservation according to conference attendees. We also look ahead to the changes that the covid-19 pandemic will bring to the structure of the conference in 2021 and beyond.
+
+## Important figures
+
+![The impact of the ICLDC conference series, global responses](fig1.png)
+
+
+
+
+## Citation
+
+<p class="buttons" style="text-align:center;">
+<a class="btn btn-danger" target="_blank" href="https://www.zotero.org/save?type=doi&q=10125/24966">{{< ai zotero >}}&emsp;Add to Zotero {{< fa square-arrow-up-right >}}</a>
+</p>
+
+```bibtex
+@article{Berez-2020,
+    title = {Supporting small languages together: The history and impact of the {International Conference on Language Documentation \& Conservation series}},
+    author = {Andrea Berez-Kroeker and  Noella Handley and Bradley Rentz and Jim Yoshioka and Victoria Anderson and Bradley McDonnell},
+    journal = {Language Documentation \& Conservation},
+    volume = {14},
+    pages = {642--666},
+    doi = {10125/24966},
+    year = {2020}
+  }
+```

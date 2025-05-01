@@ -1,0 +1,91 @@
+---
+title: "Using High School Data to Predict College Success in Palau"
+date: 2021-02-01
+author:
+  - name: Bradley Rentz
+    url: https://bradleyrentz.com/
+    orcid: 0000-0002-2893-6105
+    affiliation: McREL International
+  - name: Samantha E. Holquist
+    orcid: 0000-0002-6703-119X
+    affiliation: McREL International
+  - name: Sheila A. Arens
+    orcid: 0009-0006-8827-4437
+    affiliation: McREL International
+  - name: David Stuit
+    affiliation: Basis Policy Research   
+  - name: Evan Rhinesmith
+    affiliation: Basis Policy Research
+  - name: Anna Nicotera
+    affiliation: Basis Policy Research     
+  - name: Margot Plotz
+    affiliation: Basis Policy Research  
+ 
+categories:
+  - Palau
+  - Palau Ministry of Education
+  - Palau Community College
+  - college success
+  - secondary education
+  - postsecondary education
+  - regression analysis
+  - math
+  - reading
+  
+pub-info:
+  reference: >-
+    <a href="https://bradleyrentz.com/">Rentz, B.</a>, Holquist, S. E., Nardi, C., Arens, S.A., Stuit, D., Rhinesmith, E., Nicotera, A., & Plotz, M. (2021). <em>Using High School Data to Predict College Success in Palau  (REL 2021–059).</em> U.S. Department of Education, Institute of Education Sciences, National Center for Education Evaluation and Regional Assistance, Regional Educational Laboratory Pacific. <a href="https://files.eric.ed.gov/fulltext/ED610714.pdf">https://files.eric.ed.gov/fulltext/ED610714.pdf</a>
+  links:
+    - name: Main Report
+      url: https://files.eric.ed.gov/fulltext/ED610714.pdf
+      icon: fa-solid fa-scroll
+    - name: Study Brief (5-pages)
+      url: https://files.eric.ed.gov/fulltext/ED610717.pdf
+      icon: fa-solid fa-scroll  
+    - name: Study Snapshot (1-page)
+      url: https://files.eric.ed.gov/fulltext/ED610716.pdf
+      icon: fa-solid fa-scroll       
+    - name: Infographic
+      url: https://ies.ed.gov/sites/default/files/migrated/rel/infographics/pdf/REL_PA_Using_High_School_Data_to_Predict_College_Success_Palau.pdf
+      icon: fa-solid fa-chart-simple
+    - name: Technical Appendices
+      url: https://files.eric.ed.gov/fulltext/ED610720.pdf
+      icon: fa-solid fa-file-pdf
+
+---
+
+## Important links
+
+- [Main Report](https://files.eric.ed.gov/fulltext/ED610714.pdf)
+- [Study Brief (5-pages)](https://files.eric.ed.gov/fulltext/ED610717.pdf)
+- [Study Snapshot (1-page)](https://files.eric.ed.gov/fulltext/ED610716.pdf)
+- [Study Infographic](https://ies.ed.gov/sites/default/files/migrated/rel/infographics/pdf/REL_PA_Using_High_School_Data_to_Predict_College_Success_Palau.pdf)
+- [Technical Appendices](https://files.eric.ed.gov/fulltext/ED610720.pdf)
+
+
+## Abstract
+
+The Palau Ministry of Education and Palau Community College are aligning their education systems to better prepare students for college. Research on the high school academic preparation variables that predict college success is limited for students in Palau. Using data from Palau’s Ministry of Education and Palau Community College, this study examined factors that predict early community college success and college completion. The study found that 60 percent of Palau High School graduates who enrolled in Palau Community College earned a grade point average of 2.0 or higher in their first year of college, 56 percent persisted to a second year, and 20 percent completed an associate degree or
+certificate within three years. Students with a higher grade point average and those with a higher math score on the grade 12 Palau Achievement Test in high school had better community college outcomes, after other academic preparation variables and student characteristic variables (gender and college
+cohort) were controlled for. In addition, students who earned a grade of C or higher in English I in grade 9 or in English IV in grade 12 had better community college outcomes, after the other variables were controlled for. In contrast, enrollment in the Construction Technology Career Academy in high school was a negative predictor of persisting to a second year of college and of earning an associate degree or certificate within three years.
+
+## Important figures
+
+![Figure 1. More than half of Palau High School graduates who enrolled in Palau Community College in spring 2013 through spring 2015 earned a grade point average of 2.0 or higher in their first year and persisted to a second year, but less than 20 percent earned an associate degree or certificate within three years](fig1.png)
+
+![Figure 2. Palau High School graduates’ high school grade point average was a significant predictor of earning a grade point average of 2.0 or higher in the first year at Palau Community College and of completing an associate degree or certificate within three years](fig2.png)
+
+![Figure 4. Palau High School graduates who earned a C or higher in English I were more likely to complete an associate degree or certificate at Palau Community College within three years, and graduates who earned a C or higher in English IV were more likely to persist to a second year](fig3.png)
+
+
+## Citation
+
+```bibtex
+@techreport{Rentz:2021b,
+    title = {Using High School Data to Predict College Success in {Palau}},
+    author = {Bradley Rentz and Samantha E. Holquist and Sheila A. Arens  and David Stuit and Evan Rhinesmith and Anna Nicotera and Margot Plotz},
+    url = {https://files.eric.ed.gov/fulltext/ED610714.pdf},
+    institution = {U.S. Department of Education, Institute of Education Sciences, National Center for Education Evaluation and Regional Assistance, Regional Educational Laboratory Pacific},
+    year = {2021}
+  }
+```
