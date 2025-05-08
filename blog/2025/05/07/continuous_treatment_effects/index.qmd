@@ -1,0 +1,391 @@
+---
+title: "Estimating Causal Effects of Continuous Treatments"
+date: 2025-05-07
+description: "A tutorial for estimating causal effects for continuous treatments and establishing dosage recommendations using entropy weighting, Bayesian modeling, and marginal effects."
+
+image: figs/slopesplots-1.png
+twitter-card: 
+    image: "figs/slopesplots-1.png"
+open-graph: 
+    image: "figs/slopesplots-1.png"
+
+categories:
+  - R
+  - brms
+  - Bayesian
+  - continuous treatments
+  - entropy weighting
+  - splines
+  - marginal effects
+  - causal inference
+  - dosage
+  - education 
+  - GAM
+  - generalized additive model
+  - regression
+
+
+format:
+  html:
+    shift-heading-level-by: 1
+    toc-depth: 4
+    highlight-style: arrow
+
+citation: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 6 * 0.618,
+  fig.retina = 3,
+  dev = "ragg_png",
+  fig.align = "center",
+  collapse = TRUE,
+  out.width = "95%",
+  warning = FALSE,
+  cache.extra = 12345678  # Change number to invalidate cache
+)
+
+options(
+  digits = 4,
+  width = 300
+)
+
+set.seed(12345)
+```
+
+::: {.callout-note}
+This tutorial assumes that you are familiar with R, regression modeling, and the basics of causal inference.
+:::
+
+We will be using these packages in this tutorial:
+
+```{r}
+#| label: libraries
+#| include: true
+#| message: false
+library(tidyverse)         # ggplot, dplyr, %>%, and friends
+library(gt)                # for displaying tables
+library(DT)                # for interactive tables
+library(brms)              # for Bayesian models
+library(tidybayes)         # for extracting model parameters
+library(marginaleffects)   # for model marginal effects
+library(WeightIt)          # calculating entropy weights
+library(cobalt)            # for assessing balance of weights
+
+
+
+# Custom ggplot theme to make pretty plots
+# Get the News Cycle font at https://fonts.google.com/specimen/News+Cycle
+theme_clean <- function() {
+  theme_minimal(base_family = "News Cycle") +
+    theme(panel.grid.minor = element_blank(),
+          plot.title = element_text(face = "bold"),
+          axis.title = element_text(face = "bold"),
+          strip.text = element_text(face = "bold", size = rel(1), hjust = 0),
+          strip.background = element_rect(fill = "grey80", color = NA),
+          legend.title = element_text(face = "bold"))
+}
+
+```
+
+
+# Introduction
+
+In this tutorial, we’ll examine how to calculate causal effects for continuous treatments as well as how to identify potential dosage levels for the treatment. The examples we’ll use focus on education-related scenarios, but the methods could be applied to other fields. The tutorial, however, will not provide a detailed introduction to causal inference more generally. See the further reading section below for introductions to causal inference if you are new to this topic.
+
+In the education field, examining the efficacy of new interventions is a common endeavor for researchers. To do so, researchers typically use an experimental design, such as randomized controlled trials, or a quasi-experimental design. In both scenarios, the intervention is typically thought of in binary terms: one either receives the intervention or does not. This is a very conservative approach that ignores the variation in the level of participation in the intervention. This may be fine when the intervention is well defined and has high levels of implementation fidelity and consistency. However, for studies that have varying levels of implementation of the intervention, treating the implementation as binary may miss its actual efficacy, since the variation could dilute any observed effect. In a similar vein, new interventions might not have established usage targets, and researchers may be more interested in determining those targets rather than examining whether participation in the intervention as a whole is better than no participation at all.
+
+For this tutorial, we will use an example scenario where a new education intervention is being evaluated by researchers to determine usage targets. Prior to the study, several schools and districts used the intervention for a year. The assignment was not random, so a quasi-experimental design needs to be used on the retroactive data. For the intervention, students complete a series of lessons, each of which is tracked. The researchers have access to both end-of-year outcome test scores and baseline test scores. Likewise, there are a variety of student demographic variables available to the researchers. For simplicity, we won’t include any clustering by school or district, but in real-world usage that most likely should be included.
+
+
+## Simulating Data 
+
+For this example scenario, we will simulate data using code adapted from the `WeightIt` package’s [documentation](https://ngreifer.github.io/WeightIt/articles/estimating-effects.html). I adjusted the code to make the treatment variable discrete to more closely resemble the number of lessons completed and changed how the outcome variable is calculated. We will simulate data for 5,000 students.
+
+```{r}
+#| echo: true
+#| cache: true
+#| message: false
+#| label: data
+
+gen_X <- function(n) {
+  X <- matrix(rnorm(8 * n,5), nrow = n, ncol = 8)
+  X[,5] <- as.numeric(X[,5] < 3)
+  X[,6] <- as.numeric(ifelse(X[,6] <= 1.5+2,
+                             "1",
+                             ifelse(X[,6] <= 2.5+2 & X[,6] > 1.5+2,
+                                    "2",
+                                    ifelse(X[,6] <= 5+2 & X[,6] > 2.5+2,
+                                           "3",
+                                           "4"))))
+  X[,7] <- as.numeric(ifelse(X[,7] <= 2+2,
+                             "1",
+                             ifelse(X[,7] <= 3+2 & X[,7] > 2+2,
+                                    "2",
+                                    ifelse(X[,7] <= 7 & X[,7] > 3+2,
+                                           "3",
+                                           "4"))))
+  X
+}
+
+# generate a positive count value
+gen_Ac <- function(X) {
+  LP_A <- 10 + 1.5*X[,1] - 1.3*X[,2] + 5*X[,4] - 0.3*X[,5] + 10*X[,7] - 0.15*X[,8]^2
+  Ac <- round(abs(rnorm(nrow(X),mean=10,sd = 30) +LP_A),0)
+# replace 20% with 0
+  indices <- sample(length(Ac),round(0.2*length(Ac)))
+  Ac[indices] <- 0
+  return(Ac)
+}
+
+# Continuous outcome
+gen_Y_C <- function(Ac, X) {
+  data <- data.frame(Ac,X) %>%
+    mutate(YC = case_when(
+      Ac == 0 ~ 2*X1 - 0.5*X2 + 2*X3 - 2*X4 + 3*X5 + 0.5*X6  -2*X7  -.2*X8+rnorm(n(), 0, 3),
+      Ac >= 101 ~ rnorm(n(),83,7),
+      .default = 20*log(Ac) - 0.05*Ac + 2*X1 - 2.1*X2 + 2*X3 - 3*X4 + 2*X5 + 1.8*X6  -1.3*X7  +.1*X8+ rnorm(n(), 0, 3)
+      )) %>%
+    mutate(YC  = as.numeric(scale(YC,center=TRUE,scale=TRUE)))
+  return(data$YC)
+  }
+
+# generate data
+n <- 5000
+X <- gen_X(n)
+Ac <- gen_Ac(X)
+Y_C <- gen_Y_C(Ac, X)
+# combine into data frame
+d <- data.frame(Ac, X, Y_C) %>%
+  mutate(across(X5:X7, ~ as.factor(.x))) %>%
+  rename(outcome = Y_C,
+         lessons = Ac) 
+
+d %>% head() %>% datatable()
+```
+
+In our simulated data, there are `r d %>% filter(lessons ==0) %>% nrow() %>% unname()` students who did not complete any lessons. The median number of lessons completed is `r median(d$lessons)` and the max is `r max(d$lessons)`. The variables X1 to X8 represent student covariates such as demographics and prior academic performance.
+
+```{r}
+#| echo: true
+#| message: false
+#| label: datadescriptive
+d %>%
+  ggplot(aes(x = lessons)) +
+  geom_histogram() +
+  theme_clean()
+
+d %>% 
+  dplyr::select(lessons) %>%
+  summarize(Mean = mean(lessons),Median = median(lessons),Max = max(lessons)) %>%
+  gt(caption = "Descriptive Statistics for Lessons")
+```
+
+## Data Analysis Steps
+
+Now that we have some simulated data, these are the data analysis steps that we'll follow for the rest of the tutorial:
+
+1. Create weights to ensure balance among the levels of treatment using the `WeightIt` package.
+2. Model the outcome using a Bayesian regression model using `brms`.
+3. Calculate average slopes using the `marginaleffects` package.
+4. Visualize the results using `ggplot2`.
+
+
+# Calculating Weights
+
+In a typical quasi-experimental design study that uses a binary treatment variable (intervention and comparison groups), researchers typically assess the balance between the two groups to ensure that they have similar characteristics along key variables that may be correlated with the outcome of interest. This can be done through a variety of matching and weighting procedures.
+
+In our example scenario, since we have a continuous treatment variable, we are not interested in balancing two groups, but rather balancing across the values of the treatment variable by reducing the correlation of key variables with the treatment variable. One way to do this is by using the entropy weights method described by [Vegetabile et al. (2021)](https://doi.org/10.1007/s10742-020-00236-2) and [Tübbicke (2022)](https://doi.org/10.1515/jem-2021-0002). Following that method, we will use the `weightit()` function and the following arguments:
+
+* `method = "ebal"` for entropy balancing
+* `moments = 2` to balance each covariate as well as the square of each covariate in case of non-linear association
+* `d.moments = 3` to ensure that the mean, variance, and skew of the treatment variable and other covariates are equal
+* `int = TRUE` to balance all first-order interactions of the covariates with the treatment variable
+* `estimand = "ATE"` since we want to know the treatment effect overall for the entire population, because we are interested using this intervention for all students.^[See this [working paper](https://arxiv.org/abs/2106.10577) by Noah Greifer and Elizabeth Stuart for further details about the difference between ATE, ATU, ATT, and ATO.]
+
+We also include all the covariates X1 to X8 in the `weightit()` function so that we can decorrelate them from the number of lessons a student completed. One important benefit of using entropy weighting is that its algorithm guarantees perfect balance, unlike most other methods!
+
+
+```{r}
+#| echo: true
+#| cache: true
+#| message: false
+#| label: weights
+# calculate weights using entropy method
+W <- weightit(lessons ~ X1 + X2 + X3 + X4 + X5 + 
+                X6 + X7 + X8, data = d,
+              moments = 2, # balances covariate and its square
+              d.moments = 3, # ensure balance of mean, variance, and skew
+              int = TRUE, # balances variable interactions
+              method = "ebal",
+              maxit = 10e5,
+              estimand = "ATE")
+# save weights to our data.frame
+d$weights <- W$weights
+```
+
+Now that we have our weights, we need to assess the balance. We'll do this with `bal.tab()` which shows the unadjusted and adjusted correlations of each covariate with the number of lessons a student completed.  In the table, we see that the adjusted correlations are now extremely small, which is what we want. The adjusted sample size is also somewhat smaller than the original 5,000, but still a reasonable value. In the summary output of the `WeightIt` object, we see that the range of the weights is also not too extreme, with neither extremely large or extremely small weights.
+
+```{r}
+#| echo: true
+#| message: false
+#| label: baltab
+bal <- bal.tab(W,un = TRUE) # include unadjusted values
+bal$Balance %>% knitr::kable(digits = 4)
+bal$Observations %>% knitr::kable(digits = 1)
+summary(W)
+```
+
+# Building Our Model
+
+Now it is time to build our model. First, we add the weights we created to the model using the `weights()` function like this: `outcome | weights(weights)`. Next, since our primary predictor of interest, lessons, is continuous, we model it as a spline using `s()` to capture potential non-linear effects.^[This technically makes our model a generalized additive model (GAM).] We will use the default settings for `s()`, but see the `mgcv` package [documentation](https://www.rdocumentation.org/packages/mgcv/versions/1.9-1/topics/s) for additional parameters.
+
+Finally, we include variables X1 through X8 as control variables. One could also allow the splines to vary by another predictor variable, such as `s(lessons, by = X1)`, but for simplicity, we won’t include it in this model. We will also use weakly informative priors.
+
+
+```{r}
+#| echo: true
+#| cache: true
+#| message: false
+#| label: model
+
+# build our model
+priors <- prior(normal(0,1),class="b")
+model <- brm(bf(outcome|weights(weights) ~ s(lessons) + X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8),
+             data = d,
+             prior = priors,
+             cores = 4,
+             chains = 4,
+             control = list(adapt_delta = 0.999))
+```
+
+
+# Calculating Marginal Effects 
+
+The next step is to calculate two different types of marginal effects to interpret the results.
+First, we calculate average predicted values of the outcome for various values of lessons. To do this, we first pick representative values of lessons. Then we use `avg_predictions()` to calculate the average predicted outcome values for each of the selected lesson values. In that function, we also include the weights that we generated earlier to ensure proper estimation.
+
+```{r}
+#| echo: true
+#| cache: true
+#| label: preds
+#| message: false
+#Representative values of lessons:
+values <- with(d, round(seq(quantile(lessons, .1),
+                      quantile(lessons, .99),
+                      length.out = 40)),0)
+p <- avg_predictions(model,
+                     variables = list(lessons = values),
+                     wts = "weights" # use our weights from before
+                     ) 
+```
+
+When we plot the values, we see that the average predicted outcome score increases as the number of the lessons completed also increases. We also see that this effect is non-linear. There is a fast increase in scores from 0 to about 25 lessons, then the effect begins to taper off. This plot is useful to see the actual predicted values, but doesn't directly answer our question about the effect of lessons on the outcome score.
+
+```{r}
+#| echo: true
+#| label: predsplots
+#| message: false
+p %>% 
+  ggplot(aes(x = lessons)) +
+  geom_line(aes(y = estimate)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
+              alpha = .3) +
+  labs(x = "Lessons", y = "Predicted Outcome Score") +
+  theme_clean()
+```
+
+What we are really interested in is the expected instantaneous change in the outcome for each value of lessons completed (a.k.a. the first partial derivative of the average predicted outcome plot). The expected change is useful because it directly tells us about the effect: when the value is greater than 0, there is a positive change in the outcome; when it is less than 0, there is a negative change; and when it is equal to 0, there is no effect. We use these values to determine how the effect changes across values of our treatment variable, lessons.
+
+In addition, to understand the causal effect of the number of lessons completed, we are interested in the counterfactual outcomes. That is, we want to know the outcome score each individual in the study would have received if they completed each of the $x$ possible lessons instead of their actual number of lessons. For example, how would the outcome score change for someone who had completed 0 lessons if they completed 100 lessons instead? 
+
+To do all this, we use the `avg_slopes()` function. We specify that the variable of interest is lessons with the argument `variables = "lessons"`. We also include `by = "lessons"` so that we calculate the expected change for each value of lessons; otherwise, we receive only one overall average estimated value for lessons. Next, we include `grid_type = "counterfactual"` in our `newdata` argument, which creates a grid where every student in our data has a new row for each of the values of lessons that we specified, while keeping their other variables unchanged.^[For large data sets, these grids can become quite large, so be careful with the number of possible values, or it might not run if you do not have enough RAM.] Finally, we include the weights again that we created earlier.
+
+
+```{r}
+#| echo: true
+#| label: slopes
+#| cache: true
+#| message: false
+
+# calculate the instantaneous change in outcome at each value of lesson 
+s <- avg_slopes(model,
+                variables = "lessons",
+                newdata = datagrid(lessons = values,
+                                   grid_type = "counterfactual"),
+                by = "lessons",
+                wts = "weights"
+                )
+```
+
+When we plot the results of the `avg_slopes()`, we see that there is a positive effect of lessons until about 100 lessons completed. There is also a greater positive change in the outcome for lower number of lessons completed, which means that the intervention leads to relatively quick increases in outcome scores. However, it becomes less effective at increasing the outcome scores the more lessons a student completes, especially by 50 lessons completed. At 100 lessons, there is an observed decrease in scores. 
+
+
+
+```{r}
+#| echo: true
+#| label: slopesplots
+#| message: false
+s %>%
+  ggplot(aes(x = lessons)) +
+  geom_line(aes(y = estimate)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
+              alpha = .3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Lessons", y = "Expected Change in the Outcome Score") +
+  theme_clean()
+```
+
+## Using the Marginal Effects for Decision-Making
+
+How do we use these results to inform decision-making around the use of the new intervention we studied? That depends on a variety of factors, such as how expensive and challenging the intervention is to implement, whether it is a supplemental intervention or a core part of the curriculum, and whether students choose the number of lessons they complete or if lessons are assigned/controlled by teachers.
+
+If cost, time, and effort are major concerns, we could say that 40 lessons could be a good minimum target, since the vast majority of the increase in outcome scores happens by then. Alternatively, we could choose 50 lessons, since there is a slight peak at 50 lessons, which thereafter begins to diminish for all higher values. We could also potentially establish 100 as an upper limit on the number of lessons—if the intervention is supplemental and students pick how many they complete—since there is a slight negative effect from 100 to about 110 lessons, and we would want to avoid potential detrimental effects. If the intervention becomes part of the core curriculum, then perhaps higher values like 125 could be chosen as a target, if there is strong implementation fidelity and if the goal is to maximize outcome scores at all costs.^[We have limited data beyond 125 lessons, since few students completed that many lessons, so we should be cautious when making inferences with few students. If a higher target is desired, further research with more students completing those higher number of lessons would be needed.] These decision-making scenarios are summarized in the table below.
+
+| **Target Number of Lessons** | **Scenario**                                                                 | **Justification**                                                                                                                      |
+|------------------------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| 40                           | Prioritizing cost/time efficiency                                           | Optimal minimum for major outcome gains, as **most score improvements** occur by 40 lessons.                                           |
+| 50                           | Most gains before diminishing returns                          | Captures the **slight additional increase** at 50 lessons before returns diminish substantially.                                        |
+| 100                          | Student-driven supplemental programs (voluntary participation)              | Maximize gains before **slight negative effects** observed between 100–110 lessons.                                          |
+| 125 or higher                          | Mandatory core curriculum with high implementation fidelity and resources    | Maximizes outcomes at all costs, assuming strong adherence to the program and limited constraints on effort, time, or funding.              |
+
+# Additional Considerations
+
+This tutorial provided a relatively simple example for estimating causal effects for continuous treatments. Real-world scenarios are usually much more complex and require more careful consideration. Researchers should typically consider the following as well:
+
+* using DAGs to determine which variables to include in the model.
+* examining the extent to which the study sample is representative of the target population for the intervention.
+* accounting for any clustering (such as by school or district) by including random effects.
+* modeling the residual variance to account for heteroscedasticity among different groups of the target population.
+* modeling the intervention by demographic groups or by prior performance to see if the intervention's efficacy varies for different groups of the population (for example, `s(lessons, by = gender)`.
+* using quantile regression to model how the effect varies for different performance levels, since students who perform above or below the mean may respond differently to the intervention than those who perform at the average level.
+
+
+
+# Further Reading
+
+For further reading on continuous treatments and entropy balancing see:
+
+- Vegetabile, B. G., Griffin, B. A., Coffman, D. L., Cefalu, M., Robbins, M. W., & McCaffrey, D. F. (2021). Nonparametric estimation of population average dose-response curves using entropy balancing weights for continuous exposures. *Health Services and Outcomes Research Methodology*, 21(1), 69–110. [https://doi.org/10.1007/s10742-020-00236-2](https://doi.org/10.1007/s10742-020-00236-2)
+- [https://ngreifer.github.io/WeightIt/articles/estimating-effects.html#continuous-treatments](https://ngreifer.github.io/WeightIt/articles/estimating-effects.html#continuous-treatments)
+- [https://ngreifer.github.io/WeightIt/reference/method_ebal.html](https://ngreifer.github.io/WeightIt/reference/method_ebal.html)
+- Tübbicke, S. (2022). Entropy Balancing for Continuous Treatments. *Journal of Econometric Methods*, 11(1), 71–89. [https://doi.org/10.1515/jem-2021-0002](https://doi.org/10.1515/jem-2021-0002)
+
+For additional reading on GAMs see:
+
+- [https://r.qcbs.ca/workshop08/book-en/learning-objectives.html](https://r.qcbs.ca/workshop08/book-en/learning-objectives.html)
+- [https://m-clark.github.io/generalized-additive-models/introduction.html](https://m-clark.github.io/generalized-additive-models/introduction.html)
+
+For additional reading on causal inference see:
+
+- [https://www.andrewheiss.com/blog/2024/03/21/demystifying-ate-att-atu/](https://www.andrewheiss.com/blog/2024/03/21/demystifying-ate-att-atu/)
+- [https://arxiv.org/abs/2106.10577](https://arxiv.org/abs/2106.10577)
+- [https://www.bradyneal.com/causal-inference-course](https://www.bradyneal.com/causal-inference-course)
+- [https://pmc.ncbi.nlm.nih.gov/articles/PMC2836213/](https://pmc.ncbi.nlm.nih.gov/articles/PMC2836213/)
