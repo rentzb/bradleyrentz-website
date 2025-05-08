@@ -364,7 +364,7 @@ This tutorial provided a relatively simple example for estimating causal effects
 * examining the extent to which the study sample is representative of the target population for the intervention.
 * accounting for any clustering (such as by school or district) by including random effects.
 * modeling the residual variance to account for heteroscedasticity among different groups of the target population.
-* modeling the intervention by demographic groups or by prior performance to see if the intervention's efficacy varies for different groups of the population (for example, `s(lessons, by = gender)`.
+* modeling the intervention by demographic groups or by prior performance to see if the intervention's efficacy varies for different groups of the population (for example, `s(lessons, by = gender)`).
 * using quantile regression to model how the effect varies for different performance levels, since students who perform above or below the mean may respond differently to the intervention than those who perform at the average level.
 
 
