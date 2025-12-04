@@ -3,7 +3,7 @@ title: "About me"
 pagetitle: "Bradley Rentz"
 description-meta: "Bradley Rentz is an applied quantitative researcher with a background in education research, linguistics, and data science."
 main-photo: /files/profiles/rentz-photo.jpg
-main-photo-square: /files/profiles/rentz-photo-square.jpg
+main-photo-square: /files/profiles/rentz-photo-square-new.jpg
 title-block-banner: "#BF1054"
 format:
   html:
