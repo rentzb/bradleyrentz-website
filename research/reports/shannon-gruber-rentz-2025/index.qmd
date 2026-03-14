@@ -80,12 +80,18 @@ and removing the writing component to ensure appropriate and logistically effici
 
 ## Important figures
 
-![Figure 3. Students placed into the Level 3 and Level 4 intensive pathways of English language arts courses in their first year at the College of the Marshall Islands between spring 2022 and spring 2024 had the highest passing rates for Level 4 courses on their first attempt](fig3.png)
-![Figure 4. College persistence rates at all three levels of English language arts courses were higher for students placed into intensive pathways in their first year at the College of the Marshall Islands between spring 2022 and spring 2024](fig4.png)
+Figure 3: Students placed into the Level 3 and Level 4 intensive pathways of English language arts courses in their first year at the College of the Marshall Islands between spring 2022 and spring 2024 had the highest passing rates for Level 4 courses on their first attempt
 
-![Figure 5. Students who would have placed into credit-bearing English language arts (ELA) courses between spring 2022 and spring 2024 based solely on performance on the multiple-choice component of the ELA course placement test were more likely to pass the credit- bearing courses than students who would have placed into developmental courses](fig5.png)
+![](fig3.png)
+Figure 4: College persistence rates at all three levels of English language arts courses were higher for students placed into intensive pathways in their first year at the College of the Marshall Islands between spring 2022 and spring 2024
 
-![Figure 6. Students who would have placed into credit-bearing English language arts courses between spring 2022 and spring 2024 based solely on high school grade point average (GPA) were more likely to pass the credit-bearing courses than students who would have placed into developmental courses](fig6.png)
+![](fig4.png)
+
+Figure 5: Students who would have placed into credit-bearing English language arts (ELA) courses between spring 2022 and spring 2024 based solely on performance on the multiple-choice component of the ELA course placement test were more likely to pass the credit- bearing courses than students who would have placed into developmental courses
+![](fig5.png)
+
+Figure 6: Students who would have placed into credit-bearing English language arts courses between spring 2022 and spring 2024 based solely on high school grade point average (GPA) were more likely to pass the credit-bearing courses than students who would have placed into developmental courses
+![](fig6.png)
 
 ## Citation
 
